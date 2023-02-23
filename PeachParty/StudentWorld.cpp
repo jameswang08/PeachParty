@@ -17,7 +17,23 @@ StudentWorld::StudentWorld(string assetPath)
 
 int StudentWorld::init()
 {
-	startCountdownTimer(5);  // this placeholder causes timeout after 5 seconds
+    //Load board
+    string board_file = assetPath() + "board0" + to_string(getBoardNumber()) + ".txt";
+    Board::LoadResult result = bd.loadBoard(board_file);
+    if(result ==  Board::load_fail_file_not_found || result == Board::load_fail_bad_format) return GWSTATUS_BOARD_ERROR; //Returns GWSTATUS_BOARD_ERROR is board is improperly formatted or missing
+    
+    //Dynammically Allocate Actors
+    for(int r=0;r<BOARD_WIDTH;r++){
+        for(int c=0;c<BOARD_HEIGHT;c++){
+            switch(bd.getContentsOf(c, r)){
+                case(Board::player):
+                    peachPointer = new Peach;
+                    break;
+            }
+        }//for
+    }//for
+    
+	startCountdownTimer(99);  // this placeholder causes timeout after 5 seconds
     return GWSTATUS_CONTINUE_GAME;
 }
 
