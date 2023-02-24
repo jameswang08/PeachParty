@@ -16,10 +16,15 @@ class Peach: public Actor{
     Peach(int startX, int startY);
     void doSomething();
   private:
+    //CONSTANTS
+    const int WALKING = 1;
+    const int WAITING = 2;
+    
     int walkDirection; //Walk Direction
     int pNum; //Player Number
     int state; //Walking or Waiting State
     int tTMove; //Ticks to Move
+
 };
 
 class Coin: public Actor{
@@ -28,7 +33,7 @@ class Coin: public Actor{
     void doSomething();
     bool isActive(); //Checks if coin square is alive or dead
   private:
-    bool aliveStatus;
+    bool aliveStatus; //Whether the block is active or not
     int numCoins; //Number of coins to give/take
 };
 

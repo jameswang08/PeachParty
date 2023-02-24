@@ -17,7 +17,7 @@ public:
   virtual int move();
   virtual void cleanUp();
 private:
-    std::vector<Actor> actors; //Vector containing list of all actors, except for Peach and Yoshi
+    std::vector<Actor*> actors; //Vector containing list of all actors, except for Peach and Yoshi
     Actor* peachPointer; //Pointer to Peach Actor
     Board bd;
 };
