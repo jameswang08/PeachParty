@@ -3,22 +3,27 @@
 
 #include "GraphObject.h"
 
+class StudentWorld;
+
 class Actor: public GraphObject{
   public:
-    Actor(int imageID, int startX, int startY, int dir = right, int depth = 0, double size = 1.0);
+    Actor(StudentWorld* whereAmI, int imageID, int startX, int startY, int dir = right, int depth = 0, double size = 1.0);
     void virtual doSomething() = 0;
+    StudentWorld* getWorld();
   private:
     int spriteDirection; //Sprite Direction
+    StudentWorld* world;
 };
 
 class Peach: public Actor{
   public:
-    Peach(int startX, int startY);
+    Peach(StudentWorld* whereAmI, int startX, int startY);
     void doSomething();
   private:
     //CONSTANTS
     const int WALKING = 1;
     const int WAITING = 2;
+    const int PEACHID = 1;
     
     int walkDirection; //Walk Direction
     int pNum; //Player Number
@@ -29,7 +34,7 @@ class Peach: public Actor{
 
 class Coin: public Actor{
   public:
-    Coin(int startX, int startY);
+    Coin(StudentWorld* whereAmI, int startX, int startY);
     void doSomething();
     bool isActive(); //Checks if coin square is alive or dead
   private:

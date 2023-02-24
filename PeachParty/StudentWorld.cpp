@@ -30,11 +30,11 @@ int StudentWorld::init()
         for(int c=0;c<BOARD_HEIGHT;c++){
             switch(bd.getContentsOf(c, r)){
                 case(Board::player):
-                    peachPointer = new Peach(c*SPRITE_WIDTH,r*SPRITE_HEIGHT);
-                    actors.push_back(new Coin(c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
+                    peachPointer = new Peach(this, c*SPRITE_WIDTH,r*SPRITE_HEIGHT);
+                    actors.push_back(new Coin(this, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
                     break;
                 case(Board::blue_coin_square):
-                    actors.push_back(new Coin(c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
+                    actors.push_back(new Coin(this, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
                     break;
             }
         }//for
