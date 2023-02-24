@@ -19,13 +19,14 @@ class Peach: public Actor{
   public:
     Peach(StudentWorld* whereAmI, int startX, int startY);
     void doSomething();
+    bool canMove(int direction); //Checks if peach can move in this direction
   private:
     //CONSTANTS
     const int WALKING = 1;
     const int WAITING = 2;
     const int PEACHID = 1;
     
-    int walkDirection; //Walk Direction
+    int walkDir; //Walk Direction
     int pNum; //Player Number
     int state; //Walking or Waiting State
     int tTMove; //Ticks to Move

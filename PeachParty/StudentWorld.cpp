@@ -70,3 +70,8 @@ int StudentWorld::move()
 void StudentWorld::cleanUp()
 {
 }
+
+bool StudentWorld::isEmpty(int x, int y){
+    if(bd.getContentsOf(x, y) == Board::empty) return true;
+    return false;
+}

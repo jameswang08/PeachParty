@@ -16,6 +16,7 @@ class StudentWorld : public GameWorld
     virtual int init();
     virtual int move();
     virtual void cleanUp();
+    bool isEmpty(int x, int y); //Checks if next tile is empty
   private:
     std::vector<Actor*> actors; //Vector containing list of all actors, except for Peach and Yoshi
     Actor* peachPointer; //Pointer to Peach Actor

@@ -12,17 +12,41 @@ StudentWorld* Actor::getWorld(){
 
 //Peach Class
 Peach::Peach(StudentWorld* whereAmI, int startX, int startY)
-:Actor(whereAmI,IID_PEACH,startX,startY,right,0,1), walkDirection(right), pNum(1), state(WAITING), tTMove(0){}
+:Actor(whereAmI,IID_PEACH,startX,startY,right,0,1), walkDir(right), pNum(1), state(WAITING), tTMove(0){}
+
 void Peach::doSomething(){
     //If Player to Move
     if(state==WAITING){
         //Check if avatar is facing valid direction and fix if not
-        //Check if user pressed key
-        if(getWorld()->getAction(PEACHID)){
-            
+        //If user decides to roll die
+        if(getWorld()->getAction(PEACHID)==ACTION_ROLL){
+            int die_roll = randInt(1,10); //Generate random die roll
+            tTMove = die_roll*8; //Change ticks to move
+            state = WALKING; //Player is now walking
         }
+        else return; //User doesn't press key, or presses another key
     }
+    //If user is walking
+    if(state==WALKING){
+        //Check if next tile is empty, and if so, adjust walk direction appropriately
+        if(getX()%16==0 && getY()%16==0 && !canMove(walkDir)){
+            if(walkDir == right || walkDir == left) canMove(up) ? walkDir = up : walkDir = down;
+            else if(walkDir == up || walkDir == down) canMove(right) ? walkDir = right : walkDir = left;
+        }//if
+        (walkDir == left) ? setDirection(left) : setDirection(right); //Set sprite direction to 180 deg if walking left otherwise set sprite direction to 0 deg
+    }//if
+    moveAtAngle(walkDir, 2); //Move 2 pixels in walk direction
+    tTMove--; //Decrement ticks to move count by 1
+    if(tTMove == 0) state = WAITING; //If ticks to move equals 0 then change state to waiting to roll
 };
+
+bool Peach::canMove(int direction){
+    int newX, newY;
+    getPositionInThisDirection(direction, 16, newX, newY);
+    newX /=16;
+    newY /=16;
+    return !getWorld()->isEmpty(newX,newY);
+}
 
 //Coin Class
 Coin::Coin(StudentWorld* whereAmI, int startX, int startY):Actor(whereAmI, IID_BLUE_COIN_SQUARE,startX,startY,right,1,1){}
