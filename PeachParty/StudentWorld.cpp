@@ -10,7 +10,9 @@ GameWorld* createStudentWorld(string assetPath)
 
 // Students:  Add code to this file, StudentWorld.h, Actor.h, and Actor.cpp
 StudentWorld::~StudentWorld(){
-    cleanUp();
+    if(actors.size()>0){
+        cleanUp();
+    }
 }
 
 StudentWorld::StudentWorld(string assetPath)
@@ -69,8 +71,16 @@ int StudentWorld::move()
 
 void StudentWorld::cleanUp()
 {
+    //Delete players
+    delete peachPointer;
+    while(actors.size()>0){
+        Actor* toBeDeleted = actors[0];
+        actors.erase(actors.begin());
+        delete toBeDeleted;
+    }
 }
 
+//Checks if a tile is empty
 bool StudentWorld::isEmpty(int x, int y){
     if(bd.getContentsOf(x, y) == Board::empty) return true;
     return false;

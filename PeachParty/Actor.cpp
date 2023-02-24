@@ -2,7 +2,10 @@
 #include "StudentWorld.h"
 
 // Students:  Add code to this file, Actor.h, StudentWorld.h, and StudentWorld.cpp
-//Actor Base Class
+
+//***************
+//||ACTOR CLASS||
+//***************
 Actor::Actor(StudentWorld* whereAmI, int imageID, int startX, int startY, int dir, int depth, double size):GraphObject(imageID, startX, startY, dir, depth, size){
     world = whereAmI;
 }
@@ -10,7 +13,9 @@ StudentWorld* Actor::getWorld(){
     return world;
 }
 
-//Peach Class
+//***************
+//||PEACH CLASS||
+//***************
 Peach::Peach(StudentWorld* whereAmI, int startX, int startY)
 :Actor(whereAmI,IID_PEACH,startX,startY,right,0,1), walkDir(right), pNum(1), state(WAITING), tTMove(0){}
 
@@ -48,7 +53,9 @@ bool Peach::canMove(int direction){
     return !getWorld()->isEmpty(newX,newY);
 }
 
-//Coin Class
+//**************
+//||COIN CLASS||
+//**************
 Coin::Coin(StudentWorld* whereAmI, int startX, int startY):Actor(whereAmI, IID_BLUE_COIN_SQUARE,startX,startY,right,1,1){}
 void Coin::doSomething(){}
 bool Coin::isActive(){
