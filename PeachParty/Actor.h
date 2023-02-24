@@ -5,7 +5,7 @@
 
 class Actor: public GraphObject{
   public:
-    Actor();
+    Actor(int imageID, int startX, int startY, int dir = right, int depth = 0, double size = 1.0);
     void virtual doSomething() = 0;
   private:
     int spriteDirection; //Sprite Direction
@@ -13,7 +13,8 @@ class Actor: public GraphObject{
 
 class Peach: public Actor{
   public:
-    Peach();
+    Peach(int startX, int startY);
+    void doSomething();
   private:
     int walkDirection; //Walk Direction
     int pNum; //Player Number
@@ -23,7 +24,8 @@ class Peach: public Actor{
 
 class Coin: public Actor{
   public:
-    Coin();
+    Coin(int startX, int startY);
+    void doSomething();
     bool isActive(); //Checks if coin square is alive or dead
   private:
     bool aliveStatus;

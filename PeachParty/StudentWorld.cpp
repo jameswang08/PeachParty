@@ -9,6 +9,9 @@ GameWorld* createStudentWorld(string assetPath)
 }
 
 // Students:  Add code to this file, StudentWorld.h, Actor.h, and Actor.cpp
+StudentWorld::~StudentWorld(){
+    cleanUp();
+}
 
 StudentWorld::StudentWorld(string assetPath)
 : GameWorld(assetPath)
@@ -27,13 +30,13 @@ int StudentWorld::init()
         for(int c=0;c<BOARD_HEIGHT;c++){
             switch(bd.getContentsOf(c, r)){
                 case(Board::player):
-                    peachPointer = new Peach;
+                    peachPointer = new Peach(c,r);
                     break;
             }
         }//for
     }//for
     
-	startCountdownTimer(99);  // this placeholder causes timeout after 5 seconds
+	startCountdownTimer(99);  //Begin game timer
     return GWSTATUS_CONTINUE_GAME;
 }
 
