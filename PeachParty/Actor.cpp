@@ -56,7 +56,8 @@ bool Player::canMove(int direction){
 //**************
 //||COIN CLASS||
 //**************
-Coin::Coin(StudentWorld* whereAmI, int imageID, int startX, int startY):Actor(whereAmI, imageID,startX,startY,right,1,1), aliveStatus(true){}
+Coin::Coin(StudentWorld* whereAmI, int imageID, int startX, int startY, int amt):Actor(whereAmI, imageID,startX,startY,right,1,1), aliveStatus(true), numCoins(amt){}
+
 void Coin::doSomething(){
     if(!isActive()){
         return;

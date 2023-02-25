@@ -36,7 +36,7 @@ class Player: public Actor{
 
 class Coin: public Actor{
   public:
-    Coin(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    Coin(StudentWorld* whereAmI, int imageID, int startX, int startY, int amt);
     void doSomething();
     bool isActive(); //Checks if coin square is alive or dead
   private:
