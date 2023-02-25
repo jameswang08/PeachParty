@@ -10,6 +10,7 @@ GameWorld* createStudentWorld(string assetPath)
 
 // Students:  Add code to this file, StudentWorld.h, Actor.h, and Actor.cpp
 StudentWorld::~StudentWorld(){
+    //Prevents double delete
     if(actors.size()>0){
         cleanUp();
     }
@@ -32,11 +33,11 @@ int StudentWorld::init()
         for(int c=0;c<BOARD_HEIGHT;c++){
             switch(bd.getContentsOf(c, r)){
                 case(Board::player):
-                    peachPointer = new Peach(this, c*SPRITE_WIDTH,r*SPRITE_HEIGHT);
-                    actors.push_back(new Coin(this, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
+                    peachPointer = new Player(this, IID_PEACH, c*SPRITE_WIDTH,r*SPRITE_HEIGHT);
+                    actors.push_back(new Coin(this, IID_BLUE_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
                     break;
                 case(Board::blue_coin_square):
-                    actors.push_back(new Coin(this, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
+                    actors.push_back(new Coin(this, IID_BLUE_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
                     break;
             }
         }//for

@@ -15,16 +15,17 @@ class Actor: public GraphObject{
     StudentWorld* world;
 };
 
-class Peach: public Actor{
+class Player: public Actor{
   public:
-    Peach(StudentWorld* whereAmI, int startX, int startY);
+    Player(StudentWorld* whereAmI, int imageID, int startX, int startY);
     void doSomething();
     bool canMove(int direction); //Checks if peach can move in this direction
   private:
     //CONSTANTS
     const int WALKING = 1;
     const int WAITING = 2;
-    const int PEACHID = 1;
+    const int P1 = 1;
+    const int P2 = 2;
     
     int walkDir; //Walk Direction
     int pNum; //Player Number
@@ -35,7 +36,7 @@ class Peach: public Actor{
 
 class Coin: public Actor{
   public:
-    Coin(StudentWorld* whereAmI, int startX, int startY);
+    Coin(StudentWorld* whereAmI, int imageID, int startX, int startY);
     void doSomething();
     bool isActive(); //Checks if coin square is alive or dead
   private:
