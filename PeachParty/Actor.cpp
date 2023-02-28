@@ -17,7 +17,7 @@ StudentWorld* Actor::getWorld(){
 //||PLAYER CLASS||
 //****************
 Player::Player(StudentWorld* whereAmI, int imageID, int startX, int startY)
-:Actor(whereAmI,imageID,startX,startY,right,0,1), walkDir(right), pNum(1), state(WAITING), tTMove(0){}
+:Actor(whereAmI,imageID,startX,startY,right,0,1), walkDir(right), pNum(1), state(WAITING), tTMove(0) ,nCoins(0), nStars(0), hasVortex(false){}
 
 void Player::doSomething(){
     //If Player to Move

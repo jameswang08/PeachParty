@@ -31,6 +31,9 @@ class Player: public Actor{
     int pNum; //Player Number
     int state; //Walking or Waiting State
     int tTMove; //Ticks to Move
+    int nCoins; //Number of coins
+    int nStars; //Number of stars
+    bool hasVortex; //Whether a player has a vortex projectile or not
 
 };
 

@@ -34,10 +34,14 @@ int StudentWorld::init()
             switch(bd.getContentsOf(c, r)){
                 case(Board::player):
                     peachPointer = new Player(this, IID_PEACH, c*SPRITE_WIDTH,r*SPRITE_HEIGHT);
+                    peachPointer = new Player(this, IID_YOSHI, c*SPRITE_WIDTH,r*SPRITE_HEIGHT);
                     actors.push_back(new Coin(this, IID_BLUE_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT, 3));
                     break;
                 case(Board::blue_coin_square):
                     actors.push_back(new Coin(this, IID_BLUE_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT, 3));
+                    break;
+                case(Board::red_coin_square):
+                    actors.push_back(new Coin(this, IID_RED_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT, -3));
                     break;
             }
         }//for
