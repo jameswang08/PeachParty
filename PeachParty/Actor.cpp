@@ -17,7 +17,7 @@ StudentWorld* Actor::getWorld(){
 //||PLAYER CLASS||
 //****************
 Player::Player(StudentWorld* whereAmI, int imageID, int startX, int startY)
-:Actor(whereAmI,imageID,startX,startY,right,0,1), walkDir(right), pNum(1), state(WAITING), tTMove(0) ,nCoins(0), nStars(0), hasVortex(false){}
+:Actor(whereAmI,imageID,startX,startY,right,0,1), walkDir(right), state(WAITING), tTMove(0) ,nCoins(0), nStars(0), hasVortex(false){}
 
 void Player::doSomething(){
     //If Player to Move
@@ -52,6 +52,28 @@ bool Player::canMove(int direction){
     newY /=16;
     return !getWorld()->isEmpty(newX,newY);
 }
+
+//****************
+//||BADDIE CLASS||
+//****************
+Baddie::Baddie(StudentWorld* whereAmI, int imageID, int startX, int startY):Actor(whereAmI,imageID,startX,startY,right,0,1), walkDir(right), state(PAUSED), travelDist(0), pauseCounter(0){}
+
+void Baddie::doSomething(){}
+
+
+//****************
+//||BOWSER CLASS||
+//****************
+Bowser::Bowser(StudentWorld* whereAmI, int imageID, int startX, int startY): Baddie(whereAmI, imageID, startX, startY){}
+
+void Bowser::doSomething(){}
+
+//*************
+//||BOO CLASS||
+//*************
+Boo::Boo(StudentWorld* whereAmI, int imageID, int startX, int startY): Baddie(whereAmI, imageID, startX, startY){}
+
+void Boo::doSomething(){}
 
 //****************
 //||Square CLASS||

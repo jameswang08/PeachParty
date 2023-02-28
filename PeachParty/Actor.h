@@ -22,18 +22,47 @@ class Player: public Actor{
     bool canMove(int direction); //Checks if peach can move in this direction
   private:
     //CONSTANTS
-    const int WALKING = 1;
-    const int WAITING = 2;
+    static const int WALKING = 1;
+    static const int WAITING = 2;
     const int P1 = 1;
     const int P2 = 2;
     
     int walkDir; //Walk Direction
-    int pNum; //Player Number
     int state; //Walking or Waiting State
     int tTMove; //Ticks to Move
     int nCoins; //Number of coins
     int nStars; //Number of stars
     bool hasVortex; //Whether a player has a vortex projectile or not
+};
+
+//Baddie base class for Boo and Bowser
+class Baddie: public Actor{
+  public:
+    Baddie(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    virtual void doSomething();
+  private:
+    static const int WALKING = 1;
+    static const int PAUSED = 2;
+    int walkDir; //Walk direction
+    int state; //State, WALKING or PAUSED
+    int travelDist; //Travel distance
+    int pauseCounter; //Pause counter
+};
+
+//Derived class for bowser
+class Bowser: public Baddie{
+  public:
+    Bowser(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    void doSomething();
+  private:
+};
+
+//Derived class for boo
+class Boo: public Baddie{
+  public:
+    Boo(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    void doSomething();
+  private:
 };
 
 //Square base class for all the squares
