@@ -20,6 +20,7 @@ class StudentWorld : public GameWorld
   private:
     std::vector<Actor*> actors; //Vector containing list of all actors, except for Peach and Yoshi
     Actor* peachPointer; //Pointer to Peach Actor
+    Actor* yoshiPointer;
     Board bd;
 };
 

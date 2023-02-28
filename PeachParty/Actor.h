@@ -34,17 +34,69 @@ class Player: public Actor{
     int nCoins; //Number of coins
     int nStars; //Number of stars
     bool hasVortex; //Whether a player has a vortex projectile or not
-
 };
 
-class Coin: public Actor{
+//Square base class for all the squares
+class Square: public Actor{
   public:
-    Coin(StudentWorld* whereAmI, int imageID, int startX, int startY, int amt);
-    void doSomething();
+    Square(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    virtual void doSomething();
     bool isActive(); //Checks if coin square is alive or dead
   private:
     bool aliveStatus; //Whether the block is active or not
-    int numCoins; //Number of coins to give/take
 };
+
+//Derived class for coin square
+class Coin: public Square{
+  public:
+    Coin(StudentWorld* whereAmI, int imageID, int startX, int startY, int amt);
+    void doSomething();
+  private:
+    int nCoins; //Number of coins to give/take
+};
+
+//Derived class for star square
+class Star: public Square{
+  public:
+    Star(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    void doSomething();
+  private:
+};
+
+//Derived class for directional square
+class Directional: public Square{
+  public:
+    Directional(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    void doSomething();
+  private:
+};
+
+//Derived class for bank square
+class Bank: public Square{
+  public:
+    Bank(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    void doSomething();
+  private:
+    int balance;
+};
+
+//Derived class for event square
+class Event: public Square{
+  public:
+    Event(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    void doSomething();
+  private:
+};
+
+//Derived class for dropping square
+class Dropping: public Square{
+  public:
+    Dropping(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    void doSomething();
+  private:
+};
+
+
+
 
 #endif // ACTOR_H_

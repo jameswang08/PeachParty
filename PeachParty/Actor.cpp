@@ -53,16 +53,59 @@ bool Player::canMove(int direction){
     return !getWorld()->isEmpty(newX,newY);
 }
 
-//**************
-//||COIN CLASS||
-//**************
-Coin::Coin(StudentWorld* whereAmI, int imageID, int startX, int startY, int amt):Actor(whereAmI, imageID,startX,startY,right,1,1), aliveStatus(true), numCoins(amt){}
+//****************
+//||Square CLASS||
+//****************
+Square::Square(StudentWorld* whereAmI, int imageID, int startX, int startY):Actor(whereAmI, imageID,startX,startY,right,1,1), aliveStatus(true){}
 
-void Coin::doSomething(){
+void Square::doSomething(){
     if(!isActive()){
         return;
     }
 }
-bool Coin::isActive(){
+
+bool Square::isActive(){
     return aliveStatus;
 }
+
+//**************
+//||COIN CLASS||
+//**************
+Coin::Coin(StudentWorld* whereAmI, int imageID, int startX, int startY, int amt):Square(whereAmI,imageID, startX, startY), nCoins(amt){}
+
+void Coin::doSomething(){}
+
+//**************
+//||STAR CLASS||
+//**************
+Star::Star(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
+
+void Star::doSomething(){}
+
+//*********************
+//||DIRECTIONAL CLASS||
+//*********************
+Directional::Directional(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
+
+void Directional::doSomething(){}
+
+//**************
+//||BANK CLASS||
+//**************
+Bank::Bank(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY), balance(0){}
+
+void Bank::doSomething(){}
+
+//***************
+//||EVENT CLASS||
+//***************
+Event::Event(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
+
+void Event::doSomething(){}
+
+//******************
+//||DROPPING CLASS||
+//******************
+Dropping::Dropping(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
+
+void Dropping::doSomething(){}
