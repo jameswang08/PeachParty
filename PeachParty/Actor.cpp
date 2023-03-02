@@ -17,7 +17,7 @@ StudentWorld* Actor::getWorld(){
 //||PLAYER CLASS||
 //****************
 Player::Player(StudentWorld* whereAmI, int imageID, int startX, int startY)
-:Actor(whereAmI,imageID,startX,startY,right,0,1), walkDir(right), state(WAITING), tTMove(0) ,nCoins(0), nStars(0), hasVortex(false){}
+:Actor(whereAmI,imageID,startX,startY,right,0,1), dieRoll(0), walkDir(right), state(WAITING), tTMove(0) ,nCoins(0), nStars(0), hasVortex(false), landed(false){}
 
 void Player::doSomething(){
     //If Player to Move
@@ -25,9 +25,10 @@ void Player::doSomething(){
         //Check if avatar is facing valid direction and fix if not
         //If user decides to roll die
         if(getWorld()->getAction(P1)==ACTION_ROLL){
-            int die_roll = randInt(1,10); //Generate random die roll
-            tTMove = die_roll*8; //Change ticks to move
+            dieRoll = randInt(1,10); //Generate random die roll
+            tTMove = dieRoll*8; //Change ticks to move
             state = WALKING; //Player is now walking
+            landed = false; //Player move away from square
         }
         else return; //User doesn't press key, or presses another key
     }
@@ -42,7 +43,10 @@ void Player::doSomething(){
     }//if
     moveAtAngle(walkDir, 2); //Move 2 pixels in walk direction
     tTMove--; //Decrement ticks to move count by 1
-    if(tTMove == 0) state = WAITING; //If ticks to move equals 0 then change state to waiting to roll
+    if(tTMove == 0){
+        state = WAITING; //If ticks to move equals 0 then change state to waiting to roll
+        landed = true; //Player landed on square
+    }
 };
 
 bool Player::canMove(int direction){
@@ -52,6 +56,27 @@ bool Player::canMove(int direction){
     newY /=16;
     return !getWorld()->isEmpty(newX,newY);
 }
+
+bool Player::hasLanded(){
+    return landed;
+}
+
+int Player::getCoins(){
+    return nCoins;
+}
+
+int Player::getStars(){
+    return nStars;
+}
+
+bool Player::vortex(){
+    return hasVortex;
+}
+
+int Player::getRoll(){
+    return dieRoll;
+}
+
 
 //****************
 //||BADDIE CLASS||
@@ -93,9 +118,31 @@ bool Square::isActive(){
 //**************
 //||COIN CLASS||
 //**************
-Coin::Coin(StudentWorld* whereAmI, int imageID, int startX, int startY, int amt):Square(whereAmI,imageID, startX, startY), nCoins(amt){}
+Coin::Coin(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY), nCoins(0){}
 
 void Coin::doSomething(){}
+
+int Coin::getCoins(){return nCoins;}
+
+void Coin::setCoins(int amt){nCoins=amt;}
+
+//*********
+//BLUE COIN
+//*********
+Blue::Blue(StudentWorld* whereAmI, int imageID, int startX, int startY):Coin(whereAmI,imageID, startX, startY){
+    setCoins(3);
+}
+
+void Blue::doSomething(){}
+
+//********
+//RED COIN
+//********
+Red::Red(StudentWorld* whereAmI, int imageID, int startX, int startY):Coin(whereAmI,imageID, startX, startY){
+    setCoins(-3);
+}
+
+void Red::doSomething(){}
 
 //**************
 //||STAR CLASS||

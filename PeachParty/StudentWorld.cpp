@@ -39,15 +39,15 @@ int StudentWorld::init()
                 case(Board::player):
                     peachPointer = new Player(this, IID_PEACH, c*SPRITE_WIDTH,r*SPRITE_HEIGHT);
                     yoshiPointer = new Player(this, IID_YOSHI, c*SPRITE_WIDTH,r*SPRITE_HEIGHT);
-                    actors.push_back(new Coin(this, IID_BLUE_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT, 3));
+                    actors.push_back(new Blue(this, IID_BLUE_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
                     break;
                 //Blue coin tile
                 case(Board::blue_coin_square):
-                    actors.push_back(new Coin(this, IID_BLUE_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT, 3));
+                    actors.push_back(new Blue(this, IID_BLUE_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
                     break;
                 //Red coin tile
                 case(Board::red_coin_square):
-                    actors.push_back(new Coin(this, IID_RED_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT, -3));
+                    actors.push_back(new Red(this, IID_RED_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
                     break;
                 //Star square tile
                 case(Board::star_square):
@@ -84,12 +84,12 @@ int StudentWorld::init()
                 //Boswer tile
                 case(Board::bowser):
                     actors.push_back(new Bowser(this,IID_BOWSER, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
-                    actors.push_back(new Coin(this, IID_BLUE_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT, 3));
+                    actors.push_back(new Blue(this, IID_BLUE_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
                     break;
                 //Boo tile
                 case(Board::boo):
                     actors.push_back(new Boo(this,IID_BOO, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
-                    actors.push_back(new Coin(this, IID_BLUE_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT, 3));
+                    actors.push_back(new Blue(this, IID_BLUE_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
                     break;
             }
         }//for
@@ -102,13 +102,6 @@ int StudentWorld::init()
 int StudentWorld::move()
 {
     
-    if (timeRemaining() <= 0){
-        playSound(SOUND_GAME_FINISHED); //Play sound when game ends
-        
-        //Placeholder for evaluating which player won
-        return GWSTATUS_PEACH_WON;
-    }
-    
     //Ask actors to do something
     //Check is things die later..
     peachPointer->doSomething();
@@ -117,7 +110,20 @@ int StudentWorld::move()
     }
     
     //Update game stats
-    setGameStatText(to_string(timeRemaining()));
+    string p1Stats = "P1 Roll: " + to_string(peachPointer->getRoll()) + " Stars: " + to_string(peachPointer->getStars()) + " $$: " + to_string(peachPointer->getCoins());
+    peachPointer->vortex() ? p1Stats+=" VOR | " : p1Stats+=" | ";
+    
+    string p2Stats = "P2 Roll: " + to_string(yoshiPointer->getRoll()) + " Stars: " + to_string(yoshiPointer->getStars()) + " $$: " + to_string(yoshiPointer->getCoins());
+    if(yoshiPointer->vortex()) p2Stats+=" VOR";
+    
+    setGameStatText(p1Stats + "Time: " + to_string(timeRemaining()) + " | Bank: 0 | " + p2Stats );
+    
+    if (timeRemaining() <= 0){
+        playSound(SOUND_GAME_FINISHED); //Play sound when game ends
+        
+        //Placeholder for evaluating which player won
+        return GWSTATUS_PEACH_WON;
+    }
     
 	return GWSTATUS_CONTINUE_GAME;
 }

@@ -20,6 +20,11 @@ class Player: public Actor{
     Player(StudentWorld* whereAmI, int imageID, int startX, int startY);
     void doSomething();
     bool canMove(int direction); //Checks if peach can move in this direction
+    bool hasLanded(); //Checks if a player has landed on square
+    int getStars(); //Checks how many stars player has
+    int getCoins(); //Checks how many coins player has
+    bool vortex(); //Checks if player has vortex
+    int getRoll(); //Checks player's die roll
   private:
     //CONSTANTS
     static const int WALKING = 1;
@@ -27,12 +32,14 @@ class Player: public Actor{
     const int P1 = 1;
     const int P2 = 2;
     
+    int dieRoll; //Player's roll
     int walkDir; //Walk Direction
     int state; //Walking or Waiting State
     int tTMove; //Ticks to Move
     int nCoins; //Number of coins
     int nStars; //Number of stars
     bool hasVortex; //Whether a player has a vortex projectile or not
+    bool landed; //Flag for when the player lands on a square
 };
 
 //Baddie base class for Boo and Bowser
@@ -78,11 +85,31 @@ class Square: public Actor{
 //Derived class for coin square
 class Coin: public Square{
   public:
-    Coin(StudentWorld* whereAmI, int imageID, int startX, int startY, int amt);
-    void doSomething();
+    Coin(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    virtual void doSomething();
+    int getCoins();
+    void setCoins(int amt);
   private:
     int nCoins; //Number of coins to give/take
 };
+
+//Derived class for Blue Coin Square
+class Blue: public Coin{
+  public:
+    Blue(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    void doSomething();
+  private:
+};
+
+//Derived class for Red Coin Square
+class Red: public Coin{
+  public:
+    Red(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    void doSomething();
+  private:
+};
+
+//Derived class for Red Coin Square
 
 //Derived class for star square
 class Star: public Square{
