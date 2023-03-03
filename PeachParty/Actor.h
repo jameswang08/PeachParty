@@ -8,8 +8,9 @@ class StudentWorld;
 class Actor: public GraphObject{
   public:
     Actor(StudentWorld* whereAmI, int imageID, int startX, int startY, int dir = right, int depth = 0, double size = 1.0);
-    void virtual doSomething() = 0;
-    StudentWorld* getWorld();
+    virtual void doSomething() = 0;
+    StudentWorld* getWorld() const;
+    
   private:
     int spriteDirection; //Sprite Direction
     StudentWorld* world;
@@ -20,11 +21,14 @@ class Player: public Actor{
     Player(StudentWorld* whereAmI, int imageID, int startX, int startY);
     void doSomething();
     bool canMove(int direction); //Checks if peach can move in this direction
-    bool hasLanded(); //Checks if a player has landed on square
-    int getStars(); //Checks how many stars player has
-    int getCoins(); //Checks how many coins player has
-    bool vortex(); //Checks if player has vortex
-    int getRoll(); //Checks player's die roll
+    bool hasLanded() const; //Checks if a player has landed on square
+    void setHere(); //Sets here to true;
+    bool isHere() const; //Checks if a player is still on square
+    int getStars() const; //Checks how many stars player has
+    int getCoins() const; //Checks how many coins player has
+    void addCoins(int amt); //Adds coinds to players coins
+    bool vortex() const; //Checks if player has vortex
+    int getRoll() const; //Checks player's die roll
   private:
     //CONSTANTS
     static const int WALKING = 1;
@@ -40,6 +44,7 @@ class Player: public Actor{
     int nStars; //Number of stars
     bool hasVortex; //Whether a player has a vortex projectile or not
     bool landed; //Flag for when the player lands on a square
+    bool here; //Flag for if a player is staying on a square
 };
 
 //Baddie base class for Boo and Bowser
@@ -76,8 +81,8 @@ class Boo: public Baddie{
 class Square: public Actor{
   public:
     Square(StudentWorld* whereAmI, int imageID, int startX, int startY);
-    virtual void doSomething();
-    bool isActive(); //Checks if coin square is alive or dead
+    void virtual doSomething() = 0;
+    bool isActive()  const; //Checks if coin square is alive or dead
   private:
     bool aliveStatus; //Whether the block is active or not
 };
@@ -85,28 +90,10 @@ class Square: public Actor{
 //Derived class for coin square
 class Coin: public Square{
   public:
-    Coin(StudentWorld* whereAmI, int imageID, int startX, int startY);
-    virtual void doSomething();
-    int getCoins();
-    void setCoins(int amt);
-  private:
-    int nCoins; //Number of coins to give/take
-};
-
-//Derived class for Blue Coin Square
-class Blue: public Coin{
-  public:
-    Blue(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    Coin(StudentWorld* whereAmI, int imageID, int startX, int startY, int amt);
     void doSomething();
   private:
-};
-
-//Derived class for Red Coin Square
-class Red: public Coin{
-  public:
-    Red(StudentWorld* whereAmI, int imageID, int startX, int startY);
-    void doSomething();
-  private:
+    int coinModifier; //Number of coins to give/take
 };
 
 //Derived class for Red Coin Square
@@ -151,8 +138,5 @@ class Dropping: public Square{
     void doSomething();
   private:
 };
-
-
-
 
 #endif // ACTOR_H_

@@ -9,7 +9,7 @@
 Actor::Actor(StudentWorld* whereAmI, int imageID, int startX, int startY, int dir, int depth, double size):GraphObject(imageID, startX, startY, dir, depth, size){
     world = whereAmI;
 }
-StudentWorld* Actor::getWorld(){
+StudentWorld* Actor::getWorld() const{
     return world;
 }
 
@@ -17,7 +17,7 @@ StudentWorld* Actor::getWorld(){
 //||PLAYER CLASS||
 //****************
 Player::Player(StudentWorld* whereAmI, int imageID, int startX, int startY)
-:Actor(whereAmI,imageID,startX,startY,right,0,1), dieRoll(0), walkDir(right), state(WAITING), tTMove(0) ,nCoins(0), nStars(0), hasVortex(false), landed(false){}
+:Actor(whereAmI,imageID,startX,startY,right,0,1), dieRoll(0), walkDir(right), state(WAITING), tTMove(0) ,nCoins(0), nStars(0), hasVortex(false), landed(false), here(false){}
 
 void Player::doSomething(){
     //If Player to Move
@@ -29,6 +29,7 @@ void Player::doSomething(){
             tTMove = dieRoll*8; //Change ticks to move
             state = WALKING; //Player is now walking
             landed = false; //Player move away from square
+            here = false;
         }
         else return; //User doesn't press key, or presses another key
     }
@@ -57,26 +58,37 @@ bool Player::canMove(int direction){
     return !getWorld()->isEmpty(newX,newY);
 }
 
-bool Player::hasLanded(){
+bool Player::hasLanded() const{
     return landed;
 }
 
-int Player::getCoins(){
+bool Player::isHere() const{
+    return here;
+}
+
+void Player::setHere(){
+    here = true;
+}
+
+int Player::getCoins() const{
     return nCoins;
 }
 
-int Player::getStars(){
+void Player::addCoins(int amt){
+    nCoins += amt;
+}
+
+int Player::getStars() const{
     return nStars;
 }
 
-bool Player::vortex(){
+bool Player::vortex() const{
     return hasVortex;
 }
 
-int Player::getRoll(){
+int Player::getRoll() const{
     return dieRoll;
 }
-
 
 //****************
 //||BADDIE CLASS||
@@ -105,44 +117,55 @@ void Boo::doSomething(){}
 //****************
 Square::Square(StudentWorld* whereAmI, int imageID, int startX, int startY):Actor(whereAmI, imageID,startX,startY,right,1,1), aliveStatus(true){}
 
-void Square::doSomething(){
-    if(!isActive()){
-        return;
-    }
-}
-
-bool Square::isActive(){
+bool Square::isActive() const{
     return aliveStatus;
 }
 
 //**************
 //||COIN CLASS||
 //**************
-Coin::Coin(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY), nCoins(0){}
+Coin::Coin(StudentWorld* whereAmI, int imageID, int startX, int startY, int amt):Square(whereAmI,imageID, startX, startY), coinModifier(amt){}
 
-void Coin::doSomething(){}
-
-int Coin::getCoins(){return nCoins;}
-
-void Coin::setCoins(int amt){nCoins=amt;}
-
-//*********
-//BLUE COIN
-//*********
-Blue::Blue(StudentWorld* whereAmI, int imageID, int startX, int startY):Coin(whereAmI,imageID, startX, startY){
-    setCoins(3);
+void Coin::doSomething(){
+    //Check if square is alive
+    if(!isActive()){
+        return;
+    }
+    //Check is Peach landed on square
+    if(getWorld()->getPeach()->hasLanded() && getX()==getWorld()->getPeach()->getX() && getY()==getWorld()->getPeach()->getY()){
+        //If Peach is new change coins and play sound
+        if(!getWorld()->getPeach()->isHere()){
+            if(coinModifier>0){
+                getWorld()->getPeach()->addCoins(coinModifier);
+                getWorld()->playSound(SOUND_GIVE_COIN);
+            }
+            else{
+                //Makes sure Peach's coins don't go below 0
+                int playerCoins = getWorld()->getPeach()->getCoins();
+                playerCoins < 3 ? getWorld()->getPeach()->addCoins(-playerCoins) : getWorld()->getPeach()->addCoins(coinModifier);
+                getWorld()->playSound(SOUND_TAKE_COIN);
+            }
+        //Marks Peach as having activated square already
+        getWorld()->getPeach()->setHere();
+        }
+    }
+    //Check is Yoshi landed on squ  are
+    if(getWorld()->getYoshi()->hasLanded() && getX()==getWorld()->getYoshi()->getX() && getY()==getWorld()->getYoshi()->getY()){
+        //If Yoshi is new change coins and play sound
+        if(coinModifier>0){
+            getWorld()->getYoshi()->addCoins(coinModifier);
+            getWorld()->playSound(SOUND_GIVE_COIN);
+        }
+        else{
+            //Makes sure Yoshi's coins don't go below 0
+            int playerCoins = getWorld()->getYoshi()->getCoins();
+            playerCoins < 3 ? getWorld()->getYoshi()->addCoins(-playerCoins) : getWorld()->getYoshi()->addCoins(coinModifier);
+            getWorld()->playSound(SOUND_TAKE_COIN);
+        }
+        //Marks Yoshi as having activated the square already
+        getWorld()->getYoshi()->setHere();
+    }
 }
-
-void Blue::doSomething(){}
-
-//********
-//RED COIN
-//********
-Red::Red(StudentWorld* whereAmI, int imageID, int startX, int startY):Coin(whereAmI,imageID, startX, startY){
-    setCoins(-3);
-}
-
-void Red::doSomething(){}
 
 //**************
 //||STAR CLASS||

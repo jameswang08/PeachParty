@@ -17,10 +17,12 @@ class StudentWorld : public GameWorld
     virtual int move();
     virtual void cleanUp();
     bool isEmpty(int x, int y); //Checks if next tile is empty
+    Player* getPeach();
+    Player* getYoshi();
   private:
     std::vector<Actor*> actors; //Vector containing list of all actors, except for Peach and Yoshi
     Player* peachPointer; //Pointer to Peach Actor
-    Player* yoshiPointer;
+    Player* yoshiPointer; //Pointer to Yoshi Pointer
     Board bd;
 };
 
