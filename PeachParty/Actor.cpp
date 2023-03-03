@@ -117,6 +117,31 @@ void Boo::doSomething(){}
 //****************
 Square::Square(StudentWorld* whereAmI, int imageID, int startX, int startY):Actor(whereAmI, imageID,startX,startY,right,1,1), aliveStatus(true){}
 
+void Square::doSomething(){
+    //Check if square is alive
+    if(!isActive()){
+        return;
+    }
+    //Check is Peach landed on square
+    if(getWorld()->getPeach()->hasLanded() && getX()==getWorld()->getPeach()->getX() && getY()==getWorld()->getPeach()->getY()){
+        //Checks if Peach is new
+        if(!getWorld()->getPeach()->isHere()){
+            squareAction(getWorld()->getPeach());
+            //Marks Peach as having activated square already
+            getWorld()->getPeach()->setHere();
+        }
+    }
+    //Check is Yoshi landed on square
+    if(getWorld()->getYoshi()->hasLanded() && getX()==getWorld()->getYoshi()->getX() && getY()==getWorld()->getYoshi()->getY()){
+        //Checks if Yoshi is new
+        if(!getWorld()->getYoshi()->isHere()){
+            squareAction(getWorld()->getYoshi());
+            //Marks Yoshi as having activated the square already
+            getWorld()->getYoshi()->setHere();
+        }
+    }
+}
+
 bool Square::isActive() const{
     return aliveStatus;
 }
@@ -126,44 +151,19 @@ bool Square::isActive() const{
 //**************
 Coin::Coin(StudentWorld* whereAmI, int imageID, int startX, int startY, int amt):Square(whereAmI,imageID, startX, startY), coinModifier(amt){}
 
-void Coin::doSomething(){
-    //Check if square is alive
-    if(!isActive()){
-        return;
+void Coin::squareAction(Player* plyr){
+    //If blue coin square, add coins to player
+    if(coinModifier>0){
+        plyr->addCoins(coinModifier);
+        //Play Blue Square Sound
+        getWorld()->playSound(SOUND_GIVE_COIN);
     }
-    //Check is Peach landed on square
-    if(getWorld()->getPeach()->hasLanded() && getX()==getWorld()->getPeach()->getX() && getY()==getWorld()->getPeach()->getY()){
-        //If Peach is new change coins and play sound
-        if(!getWorld()->getPeach()->isHere()){
-            if(coinModifier>0){
-                getWorld()->getPeach()->addCoins(coinModifier);
-                getWorld()->playSound(SOUND_GIVE_COIN);
-            }
-            else{
-                //Makes sure Peach's coins don't go below 0
-                int playerCoins = getWorld()->getPeach()->getCoins();
-                playerCoins < 3 ? getWorld()->getPeach()->addCoins(-playerCoins) : getWorld()->getPeach()->addCoins(coinModifier);
-                getWorld()->playSound(SOUND_TAKE_COIN);
-            }
-        //Marks Peach as having activated square already
-        getWorld()->getPeach()->setHere();
-        }
-    }
-    //Check is Yoshi landed on squ  are
-    if(getWorld()->getYoshi()->hasLanded() && getX()==getWorld()->getYoshi()->getX() && getY()==getWorld()->getYoshi()->getY()){
-        //If Yoshi is new change coins and play sound
-        if(coinModifier>0){
-            getWorld()->getYoshi()->addCoins(coinModifier);
-            getWorld()->playSound(SOUND_GIVE_COIN);
-        }
-        else{
-            //Makes sure Yoshi's coins don't go below 0
-            int playerCoins = getWorld()->getYoshi()->getCoins();
-            playerCoins < 3 ? getWorld()->getYoshi()->addCoins(-playerCoins) : getWorld()->getYoshi()->addCoins(coinModifier);
-            getWorld()->playSound(SOUND_TAKE_COIN);
-        }
-        //Marks Yoshi as having activated the square already
-        getWorld()->getYoshi()->setHere();
+    else{
+        //If red coin square, make sure coins don't go below 0
+        int playerCoins = plyr->getCoins();
+        playerCoins < 3 ? plyr->addCoins(-playerCoins) : plyr->addCoins(coinModifier);
+        //Play Red Square Sound
+        getWorld()->playSound(SOUND_TAKE_COIN);
     }
 }
 
@@ -172,32 +172,32 @@ void Coin::doSomething(){
 //**************
 Star::Star(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
 
-void Star::doSomething(){}
+void Star::squareAction(Player* plyr){}
 
 //*********************
 //||DIRECTIONAL CLASS||
 //*********************
 Directional::Directional(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
 
-void Directional::doSomething(){}
+void Directional::squareAction(Player* plyr){}
 
 //**************
 //||BANK CLASS||
 //**************
 Bank::Bank(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY), balance(0){}
 
-void Bank::doSomething(){}
+void Bank::squareAction(Player* plyr){}
 
 //***************
 //||EVENT CLASS||
 //***************
 Event::Event(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
 
-void Event::doSomething(){}
+void Event::squareAction(Player* plyr){}
 
 //******************
 //||DROPPING CLASS||
 //******************
 Dropping::Dropping(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
 
-void Dropping::doSomething(){}
+void Dropping::squareAction(Player* plyr){}
