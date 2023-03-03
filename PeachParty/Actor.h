@@ -133,7 +133,6 @@ class Bank: public Square{
     void landAction(Player* plyr);
     void traverseAction(Player* plyr);
   private:
-    int balance;
 };
 
 //Derived class for event square

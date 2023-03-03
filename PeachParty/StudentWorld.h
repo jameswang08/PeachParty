@@ -19,11 +19,14 @@ class StudentWorld : public GameWorld
     bool isEmpty(int x, int y); //Checks if next tile is empty
     Player* getPeach();
     Player* getYoshi();
+    int getBal() const; //Returns number of coins in the bank
+    void setBal(int amt); //Sets the number of coins in the bank
   private:
     std::vector<Actor*> actors; //Vector containing list of all actors, except for Peach and Yoshi
     Player* peachPointer; //Pointer to Peach Actor
     Player* yoshiPointer; //Pointer to Yoshi Pointer
     Board bd;
+    int bankAcc;
 };
 
 #endif // STUDENTWORLD_H_

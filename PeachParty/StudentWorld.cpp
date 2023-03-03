@@ -17,7 +17,7 @@ StudentWorld::~StudentWorld(){
 }
 
 StudentWorld::StudentWorld(string assetPath)
-: GameWorld(assetPath)
+: GameWorld(assetPath), bankAcc(0)
 {
 }
 
@@ -112,7 +112,7 @@ int StudentWorld::move()
     string p2Stats = "P2 Roll: " + to_string(yoshiPointer->getRoll()) + " Stars: " + to_string(yoshiPointer->getStars()) + " $$: " + to_string(yoshiPointer->getCoins());
     if(yoshiPointer->vortex()) p2Stats+=" VOR";
     
-    setGameStatText(p1Stats + "Time: " + to_string(timeRemaining()) + " | Bank: 0 | " + p2Stats );
+    setGameStatText(p1Stats + "Time: " + to_string(timeRemaining()) + " | Bank: " + to_string(getBal()) + " | " + p2Stats );
     
     if (timeRemaining() <= 0){
         playSound(SOUND_GAME_FINISHED); //Play sound when game ends
@@ -148,4 +148,12 @@ Player* StudentWorld::getPeach(){
 
 Player* StudentWorld::getYoshi(){
     return yoshiPointer;
+}
+
+int StudentWorld::getBal() const{
+    return bankAcc;
+}
+
+void StudentWorld::setBal(int amt){
+    bankAcc = amt;
 }
