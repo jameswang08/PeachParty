@@ -21,15 +21,20 @@ class Player: public Actor{
     Player(StudentWorld* whereAmI, int imageID, int startX, int startY);
     void doSomething();
     bool canMove(int direction); //Checks if peach can move in this direction
+
+    //Getters
     bool hasLanded() const; //Checks if a player has landed on square
-    void setHere(); //Sets here to true;
     bool isHere() const; //Checks if a player is still on square
     int getStars() const; //Checks how many stars player has
     int getCoins() const; //Checks how many coins player has
-    void addCoins(int amt); //Adds coins to players coins
-    void addStars(int amt); //Adds stars to players stars
     bool vortex() const; //Checks if player has vortex
     int getRoll() const; //Checks player's die roll
+
+    //Setters
+    void setHere(); //Sets here to true;
+    void addCoins(int amt); //Adds coins to players coins
+    void addStars(int amt); //Adds stars to players stars
+    void setWalkDir(int dir); //Sets players move dir
   private:
     //CONSTANTS
     static const int WALKING = 1;
@@ -114,10 +119,11 @@ class Star: public Square{
 //Derived class for directional square
 class Directional: public Square{
   public:
-    Directional(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    Directional(StudentWorld* whereAmI, int imageID, int startX, int startY, int fDir);
     void landAction(Player* plyr);
     void traverseAction(Player* plyr);
   private:
+    int forcingDirection;
 };
 
 //Derived class for bank square

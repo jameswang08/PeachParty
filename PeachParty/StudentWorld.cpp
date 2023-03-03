@@ -55,23 +55,19 @@ int StudentWorld::init()
                     break;
                 //Up directional square tile
                 case(Board::up_dir_square):
-                    actors.push_back(new Directional(this,IID_DIR_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
-                    actors[actors.size()-1]->setDirection(Actor::up);
+                    actors.push_back(new Directional(this,IID_DIR_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT,Actor::up));
                     break;
                 //Right direcitonal square tile
                 case(Board::right_dir_square):
-                    actors.push_back(new Directional(this,IID_DIR_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
-                    actors[actors.size()-1]->setDirection(Actor::right);
+                    actors.push_back(new Directional(this,IID_DIR_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT,Actor::right));
                     break;
                 //Down directional square tile
                 case(Board::down_dir_square):
-                    actors.push_back(new Directional(this,IID_DIR_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
-                    actors[actors.size()-1]->setDirection(Actor::down);
+                    actors.push_back(new Directional(this,IID_DIR_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT,Actor::down));
                     break;
                 //Left directional square tile
                 case(Board::left_dir_square):
-                    actors.push_back(new Directional(this,IID_DIR_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
-                    actors[actors.size()-1]->setDirection(Actor::left);
+                    actors.push_back(new Directional(this,IID_DIR_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT,Actor::left));
                     break;
                 //Bank square tile
                 case(Board::bank_square):

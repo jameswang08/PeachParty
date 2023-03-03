@@ -58,6 +58,7 @@ bool Player::canMove(int direction){
     return !getWorld()->isEmpty(newX,newY);
 }
 
+//Getters
 bool Player::hasLanded() const{
     return landed;
 }
@@ -66,24 +67,12 @@ bool Player::isHere() const{
     return here;
 }
 
-void Player::setHere(){
-    here = true;
-}
-
 int Player::getCoins() const{
     return nCoins;
 }
 
-void Player::addCoins(int amt){
-    nCoins += amt;
-}
-
 int Player::getStars() const{
     return nStars;
-}
-
-void Player::addStars(int amt){
-    nStars+=amt;
 }
 
 bool Player::vortex() const{
@@ -92,6 +81,23 @@ bool Player::vortex() const{
 
 int Player::getRoll() const{
     return dieRoll;
+}
+
+//Setters
+void Player::setHere(){
+    here = true;
+}
+
+void Player::addCoins(int amt){
+    nCoins += amt;
+}
+
+void Player::addStars(int amt){
+    nStars+=amt;
+}
+
+void Player::setWalkDir(int dir){
+    walkDir = dir;
 }
 
 //****************
@@ -201,11 +207,18 @@ void Star::traverseAction(Player* plyr){landAction(plyr);}
 //*********************
 //||DIRECTIONAL CLASS||
 //*********************
-Directional::Directional(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
+Directional::Directional(StudentWorld* whereAmI, int imageID, int startX, int startY, int fDir):Square(whereAmI,imageID, startX, startY), forcingDirection(fDir){
+    setDirection(fDir);
+}
 
-void Directional::landAction(Player* plyr){}
+void Directional::landAction(Player* plyr){
+    //Change walk direction
+    plyr->setWalkDir(forcingDirection);
+    //Adjust sprite direction accordingly
+    (forcingDirection == left) ? plyr->setDirection(left) : plyr->setDirection(right); //Set sprite direction to 180 deg if walking left otherwise set sprite direction to 0 deg
+}
 
-void Directional::traverseAction(Player* plyr){return;}
+void Directional::traverseAction(Player* plyr){landAction(plyr);}
 
 
 //**************
