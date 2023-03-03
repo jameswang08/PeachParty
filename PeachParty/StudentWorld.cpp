@@ -75,7 +75,7 @@ int StudentWorld::init()
                     break;
                 //Event square tile
                 case(Board::event_square):
-                    actors.push_back(new Star(this,IID_EVENT_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
+                    actors.push_back(new Event(this,IID_EVENT_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
                     break;
                 //Boswer tile
                 case(Board::bowser):
@@ -107,10 +107,10 @@ int StudentWorld::move()
     
     //Update game stats
     string p1Stats = "P1 Roll: " + to_string(peachPointer->getRoll()) + " Stars: " + to_string(peachPointer->getStars()) + " $$: " + to_string(peachPointer->getCoins());
-    peachPointer->vortex() ? p1Stats+=" VOR | " : p1Stats+=" | ";
+    peachPointer->hasVortex() ? p1Stats+=" VOR | " : p1Stats+=" | ";
     
     string p2Stats = "P2 Roll: " + to_string(yoshiPointer->getRoll()) + " Stars: " + to_string(yoshiPointer->getStars()) + " $$: " + to_string(yoshiPointer->getCoins());
-    if(yoshiPointer->vortex()) p2Stats+=" VOR";
+    if(yoshiPointer->hasVortex()) p2Stats+=" VOR";
     
     setGameStatText(p1Stats + "Time: " + to_string(timeRemaining()) + " | Bank: " + to_string(getBal()) + " | " + p2Stats );
     

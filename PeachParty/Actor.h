@@ -27,14 +27,21 @@ class Player: public Actor{
     bool isHere() const; //Checks if a player is still on square
     int getStars() const; //Checks how many stars player has
     int getCoins() const; //Checks how many coins player has
-    bool vortex() const; //Checks if player has vortex
+    bool hasVortex() const; //Checks if player has vortex
     int getRoll() const; //Checks player's die roll
+    int getTicks() const; //Gets number of ticks player has left to move
+    int getWalkDir() const; //Gets player's walk direction
+    int getState() const; //Gets plyer's state
 
     //Setters
-    void setHere(); //Sets here to true;
+    void setHere(bool tf); //Sets here to true;
     void addCoins(int amt); //Adds coins to players coins
     void addStars(int amt); //Adds stars to players stars
-    void setWalkDir(int dir); //Sets players move dir
+    void setWalkDir(int dir); //Sets players move dir and adjusts sprite direction as well
+    void toggleVortex(); //Sets vortex to opposite of what it was before
+    void setTicks(int amt); //Sets the number of ticks player has left to move
+    void setRoll(int n); //Changes the players roll
+    void setState(int newState); //Sets player's state
   private:
     //CONSTANTS
     static const int WALKING = 1;
@@ -48,7 +55,7 @@ class Player: public Actor{
     int tTMove; //Ticks to Move
     int nCoins; //Number of coins
     int nStars; //Number of stars
-    bool hasVortex; //Whether a player has a vortex projectile or not
+    bool vortex; //Whether a player has a vortex projectile or not
     bool landed; //Flag for when the player lands on a square
     bool here; //Flag for if a player is staying on a square
 };

@@ -17,7 +17,7 @@ StudentWorld* Actor::getWorld() const{
 //||PLAYER CLASS||
 //****************
 Player::Player(StudentWorld* whereAmI, int imageID, int startX, int startY)
-:Actor(whereAmI,imageID,startX,startY,right,0,1), dieRoll(0), walkDir(right), state(WAITING), tTMove(0) ,nCoins(0), nStars(0), hasVortex(false), landed(false), here(false){}
+:Actor(whereAmI,imageID,startX,startY,right,0,1), dieRoll(0), walkDir(right), state(WAITING), tTMove(0) ,nCoins(0), nStars(0), vortex(false), landed(false), here(false){}
 
 void Player::doSomething(){
     //If Player to Move
@@ -75,17 +75,29 @@ int Player::getStars() const{
     return nStars;
 }
 
-bool Player::vortex() const{
-    return hasVortex;
+bool Player::hasVortex() const{
+    return vortex;
 }
 
 int Player::getRoll() const{
     return dieRoll;
 }
 
+int Player::getTicks() const{
+    return tTMove;
+}
+
+int Player::getState() const{
+    return state;
+}
+
+int Player::getWalkDir() const{
+    return walkDir;
+}
+
 //Setters
-void Player::setHere(){
-    here = true;
+void Player::setHere(bool tf){
+    here = tf;
 }
 
 void Player::addCoins(int amt){
@@ -98,6 +110,24 @@ void Player::addStars(int amt){
 
 void Player::setWalkDir(int dir){
     walkDir = dir;
+    //Adjust sprite direction accordingly
+    (dir == left) ? setDirection(left) : setDirection(right); //Set sprite direction to 180 deg if walking left otherwise set sprite direction to 0 deg
+}
+
+void Player::toggleVortex(){
+    vortex = !vortex;
+}
+
+void Player::setTicks(int amt){
+    tTMove = amt;
+}
+
+void Player::setRoll(int n){
+    dieRoll = n;
+}
+
+void Player::setState(int newState){
+    state = newState;
 }
 
 //****************
@@ -140,7 +170,7 @@ void Square::doSomething(){
             if(!getWorld()->getPeach()->isHere()){
                 landAction(getWorld()->getPeach());
                 //Marks Peach as having activated square already
-                getWorld()->getPeach()->setHere();
+                getWorld()->getPeach()->setHere(true);
             }
         }
         else traverseAction(getWorld()->getPeach());
@@ -153,7 +183,7 @@ void Square::doSomething(){
             if(!getWorld()->getYoshi()->isHere()){
                 landAction(getWorld()->getYoshi());
                 //Marks Yoshi as having activated the square already
-                getWorld()->getYoshi()->setHere();
+                getWorld()->getYoshi()->setHere(true);
             }
         }
         else traverseAction(getWorld()->getYoshi());
@@ -185,7 +215,7 @@ void Coin::landAction(Player* plyr){
     }
 }
 
-void Coin::traverseAction(Player* plyr){return;}
+void Coin::traverseAction(Player* plyr){}
 
 //**************
 //||STAR CLASS||
@@ -204,7 +234,6 @@ void Star::landAction(Player* plyr){
 
 void Star::traverseAction(Player* plyr){landAction(plyr);}
 
-
 //*********************
 //||DIRECTIONAL CLASS||
 //*********************
@@ -215,8 +244,6 @@ Directional::Directional(StudentWorld* whereAmI, int imageID, int startX, int st
 void Directional::landAction(Player* plyr){
     //Change walk direction
     plyr->setWalkDir(forcingDirection);
-    //Adjust sprite direction accordingly
-    (forcingDirection == left) ? plyr->setDirection(left) : plyr->setDirection(right); //Set sprite direction to 180 deg if walking left otherwise set sprite direction to 0 deg
 }
 
 void Directional::traverseAction(Player* plyr){landAction(plyr);}
@@ -225,11 +252,34 @@ void Directional::traverseAction(Player* plyr){landAction(plyr);}
 //**************
 //||BANK CLASS||
 //**************
-Bank::Bank(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY), balance(0){}
+Bank::Bank(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
 
-void Bank::landAction(Player* plyr){}
+void Bank::landAction(Player* plyr){
+    //Add coins to players balance
+    plyr->addCoins(getWorld()->getBal());
+    //Resets central bank
+    getWorld()->setBal(0);
+}
 
-void Bank::traverseAction(Player* plyr){return;}
+void Bank::traverseAction(Player* plyr){
+    int playerBal = plyr->getCoins();
+    if(playerBal<5){
+        //Sets players coins to 0
+        plyr->addCoins(-playerBal);
+        //Adds coins to central bank
+        getWorld()->setBal(getWorld()->getBal()+playerBal);
+        //Play sound for depositing to bank
+        getWorld()->playSound(SOUND_DEPOSIT_BANK);
+    }
+    else{
+        //Deducts 5 coins from player
+        plyr->addCoins(-5);
+        //Adds 5 coins to central bank
+        getWorld()->setBal(getWorld()->getBal()+5);
+        //Play sound for withdrawing from bank
+        getWorld()->playSound(SOUND_WITHDRAW_BANK);
+    }
+}
 
 
 //***************
@@ -237,9 +287,72 @@ void Bank::traverseAction(Player* plyr){return;}
 //***************
 Event::Event(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
 
-void Event::landAction(Player* plyr){}
+void Event::landAction(Player* plyr){
+    int randEvent = randInt(1,3);
+    switch(randEvent){
+        case 1:
+        {
+            //Keep generating random (x,y) coordinates until a valid coordinate is generated
+            int x, y;
+            do{
+                x = randInt(0,15);
+                y = randInt(0,15);
+            }while(getWorld()->isEmpty(x,y));
+            plyr->moveTo(x*16,y*16);
+            
+            //Play teleport sound
+            getWorld()->playSound(SOUND_PLAYER_TELEPORT);
+            break;
+        }//Case 1
+        case 2:
+        {
+            //Swap (x,y) coordinates, number of ticks left in roll, player walk direciton, player sprite direction, and player roll/walk state with other player
+            Player* p1 = getWorld()->getPeach();
+            Player* p2 = getWorld()->getYoshi();
+            
+            //Store p1 values
+            int tempX = p1->getX();
+            int tempY = p1->getY();
+            int tempT = p1->getTicks();
+            int tempDir = p1->getWalkDir();
+            int tempRoll = p1->getRoll();
+            int tempState = p1->getState();
+            
+            //Swap p1 values w/ p2 values
+            p1->moveTo(p2->getX(),p2->getY());
+            p1->setTicks(p2->getTicks());
+            p1->setWalkDir(p2->getWalkDir());
+            p1->setRoll(p2->getRoll());
+            p1->setState(p2->getState());
+            
+            //Swap p2 values w/ p1 values
+            p2->moveTo(tempX,tempY);
+            p2->setTicks(tempT);
+            p2->setWalkDir(tempDir);
+            p2->setRoll(tempRoll);
+            p2->setState(tempState);
+            
+            //Makes sure swapped player doesn't reactivate event square
+            p1->setHere(true);
+            p2->setHere(true);
+            
+            //Play teleport sound
+            getWorld()->playSound(SOUND_PLAYER_TELEPORT);
+            break;
+        }//Case 2
+        case 3:
+        {
+            //If player doesn't have a vortex already, give them a vortex and play sound
+            if(!plyr->hasVortex()){
+                plyr->toggleVortex();
+                getWorld()->playSound(SOUND_GIVE_VORTEX);
+            }
+            break;
+        }//Case 3
+    }
+}
 
-void Event::traverseAction(Player* plyr){return;}
+void Event::traverseAction(Player* plyr){}
 
 
 //******************
