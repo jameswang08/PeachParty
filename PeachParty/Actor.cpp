@@ -122,24 +122,53 @@ void Square::doSomething(){
     if(!isActive()){
         return;
     }
-    //Check is Peach landed on square
-    if(getWorld()->getPeach()->hasLanded() && getX()==getWorld()->getPeach()->getX() && getY()==getWorld()->getPeach()->getY()){
-        //Checks if Peach is new
-        if(!getWorld()->getPeach()->isHere()){
-            squareAction(getWorld()->getPeach());
-            //Marks Peach as having activated square already
-            getWorld()->getPeach()->setHere();
+    
+    
+    //Check is Peach traverses a square
+    if(getX()==getWorld()->getPeach()->getX() && getY()==getWorld()->getPeach()->getY()){
+        traverseAction(getWorld()->getPeach());
+        //Check if Peach lands on a square
+        if(getWorld()->getPeach()->hasLanded()){
+            //Checks if Peach is new
+            if(!getWorld()->getPeach()->isHere()){
+                landAction(getWorld()->getPeach());
+                //Marks Peach as having activated square already
+                getWorld()->getPeach()->setHere();
+            }
         }
     }
-    //Check is Yoshi landed on square
-    if(getWorld()->getYoshi()->hasLanded() && getX()==getWorld()->getYoshi()->getX() && getY()==getWorld()->getYoshi()->getY()){
-        //Checks if Yoshi is new
-        if(!getWorld()->getYoshi()->isHere()){
-            squareAction(getWorld()->getYoshi());
-            //Marks Yoshi as having activated the square already
-            getWorld()->getYoshi()->setHere();
+    //Check is Yoshi traverses a square
+    if(getX()==getWorld()->getYoshi()->getX() && getY()==getWorld()->getYoshi()->getY()){
+        traverseAction(getWorld()->getYoshi());
+        if(getWorld()->getYoshi()->hasLanded()){
+            //Checks if Yoshi is new
+            if(!getWorld()->getYoshi()->isHere()){
+                landAction(getWorld()->getYoshi());
+                //Marks Yoshi as having activated the square already
+                getWorld()->getYoshi()->setHere();
+            }
         }
     }
+    
+    
+//    //Check is Peach landed on square
+//    if(getWorld()->getPeach()->hasLanded() && getX()==getWorld()->getPeach()->getX() && getY()==getWorld()->getPeach()->getY()){
+//        //Checks if Peach is new
+//        if(!getWorld()->getPeach()->isHere()){
+//            squareAction(getWorld()->getPeach());
+//            //Marks Peach as having activated square already
+//            getWorld()->getPeach()->setHere();
+//        }
+//    }
+//    //Check is Yoshi landed on square
+//    if(getWorld()->getYoshi()->hasLanded() && getX()==getWorld()->getYoshi()->getX() && getY()==getWorld()->getYoshi()->getY()){
+//        //Checks if Yoshi is new
+//        if(!getWorld()->getYoshi()->isHere()){
+//            squareAction(getWorld()->getYoshi());
+//            //Marks Yoshi as having activated the square already
+//            getWorld()->getYoshi()->setHere();
+//        }
+//    }
 }
 
 bool Square::isActive() const{
@@ -151,7 +180,7 @@ bool Square::isActive() const{
 //**************
 Coin::Coin(StudentWorld* whereAmI, int imageID, int startX, int startY, int amt):Square(whereAmI,imageID, startX, startY), coinModifier(amt){}
 
-void Coin::squareAction(Player* plyr){
+void Coin::landAction(Player* plyr){
     //If blue coin square, add coins to player
     if(coinModifier>0){
         plyr->addCoins(coinModifier);
@@ -167,37 +196,54 @@ void Coin::squareAction(Player* plyr){
     }
 }
 
+void Coin::traverseAction(Player* plyr){return;}
+
 //**************
 //||STAR CLASS||
 //**************
 Star::Star(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
 
-void Star::squareAction(Player* plyr){}
+void Star::landAction(Player* plyr){}
+
+void Star::traverseAction(Player* plyr){return;}
+
 
 //*********************
 //||DIRECTIONAL CLASS||
 //*********************
 Directional::Directional(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
 
-void Directional::squareAction(Player* plyr){}
+void Directional::landAction(Player* plyr){}
+
+void Directional::traverseAction(Player* plyr){return;}
+
 
 //**************
 //||BANK CLASS||
 //**************
 Bank::Bank(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY), balance(0){}
 
-void Bank::squareAction(Player* plyr){}
+void Bank::landAction(Player* plyr){}
+
+void Bank::traverseAction(Player* plyr){return;}
+
 
 //***************
 //||EVENT CLASS||
 //***************
 Event::Event(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
 
-void Event::squareAction(Player* plyr){}
+void Event::landAction(Player* plyr){}
+
+void Event::traverseAction(Player* plyr){return;}
+
 
 //******************
 //||DROPPING CLASS||
 //******************
 Dropping::Dropping(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
 
-void Dropping::squareAction(Player* plyr){}
+void Dropping::landAction(Player* plyr){}
+
+void Dropping::traverseAction(Player* plyr){return;}
+

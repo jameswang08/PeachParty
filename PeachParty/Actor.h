@@ -83,7 +83,8 @@ class Square: public Actor{
     Square(StudentWorld* whereAmI, int imageID, int startX, int startY);
     virtual void doSomething();
     bool isActive()  const; //Checks if coin square is alive or dead
-    virtual void squareAction(Player* plyr) = 0;//Specialized square action
+    virtual void landAction(Player* plyr) = 0;//Specialized square action for if player lands on square
+    virtual void traverseAction(Player* plyr) = 0;//Specialized square action for if player traverses square
   private:
     bool aliveStatus; //Whether the block is active or not
 };
@@ -92,7 +93,8 @@ class Square: public Actor{
 class Coin: public Square{
   public:
     Coin(StudentWorld* whereAmI, int imageID, int startX, int startY, int amt);
-    void squareAction(Player* plyr);
+    void landAction(Player* plyr);
+    void traverseAction(Player* plyr);
   private:
     int coinModifier; //Number of coins to give/take
 };
@@ -103,7 +105,8 @@ class Coin: public Square{
 class Star: public Square{
   public:
     Star(StudentWorld* whereAmI, int imageID, int startX, int startY);
-    void squareAction(Player* plyr);
+    void landAction(Player* plyr);
+    void traverseAction(Player* plyr);
   private:
 };
 
@@ -111,7 +114,8 @@ class Star: public Square{
 class Directional: public Square{
   public:
     Directional(StudentWorld* whereAmI, int imageID, int startX, int startY);
-    void squareAction(Player* plyr);
+    void landAction(Player* plyr);
+    void traverseAction(Player* plyr);
   private:
 };
 
@@ -119,7 +123,8 @@ class Directional: public Square{
 class Bank: public Square{
   public:
     Bank(StudentWorld* whereAmI, int imageID, int startX, int startY);
-    void squareAction(Player* plyr);
+    void landAction(Player* plyr);
+    void traverseAction(Player* plyr);
   private:
     int balance;
 };
@@ -128,7 +133,8 @@ class Bank: public Square{
 class Event: public Square{
   public:
     Event(StudentWorld* whereAmI, int imageID, int startX, int startY);
-    void squareAction(Player* plyr);
+    void landAction(Player* plyr);
+    void traverseAction(Player* plyr);
   private:
 };
 
@@ -136,7 +142,8 @@ class Event: public Square{
 class Dropping: public Square{
   public:
     Dropping(StudentWorld* whereAmI, int imageID, int startX, int startY);
-    void squareAction(Player* plyr);
+    void landAction(Player* plyr);
+    void traverseAction(Player* plyr);
   private:
 };
 
