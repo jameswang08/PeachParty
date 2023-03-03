@@ -26,7 +26,8 @@ class Player: public Actor{
     bool isHere() const; //Checks if a player is still on square
     int getStars() const; //Checks how many stars player has
     int getCoins() const; //Checks how many coins player has
-    void addCoins(int amt); //Adds coinds to players coins
+    void addCoins(int amt); //Adds coins to players coins
+    void addStars(int amt); //Adds stars to players stars
     bool vortex() const; //Checks if player has vortex
     int getRoll() const; //Checks player's die roll
   private:

@@ -82,6 +82,10 @@ int Player::getStars() const{
     return nStars;
 }
 
+void Player::addStars(int amt){
+    nStars+=amt;
+}
+
 bool Player::vortex() const{
     return hasVortex;
 }
@@ -122,8 +126,6 @@ void Square::doSomething(){
     if(!isActive()){
         return;
     }
-    
-    
     //Check is Peach traverses a square
     if(getX()==getWorld()->getPeach()->getX() && getY()==getWorld()->getPeach()->getY()){
         traverseAction(getWorld()->getPeach());
@@ -149,26 +151,6 @@ void Square::doSomething(){
             }
         }
     }
-    
-    
-//    //Check is Peach landed on square
-//    if(getWorld()->getPeach()->hasLanded() && getX()==getWorld()->getPeach()->getX() && getY()==getWorld()->getPeach()->getY()){
-//        //Checks if Peach is new
-//        if(!getWorld()->getPeach()->isHere()){
-//            squareAction(getWorld()->getPeach());
-//            //Marks Peach as having activated square already
-//            getWorld()->getPeach()->setHere();
-//        }
-//    }
-//    //Check is Yoshi landed on square
-//    if(getWorld()->getYoshi()->hasLanded() && getX()==getWorld()->getYoshi()->getX() && getY()==getWorld()->getYoshi()->getY()){
-//        //Checks if Yoshi is new
-//        if(!getWorld()->getYoshi()->isHere()){
-//            squareAction(getWorld()->getYoshi());
-//            //Marks Yoshi as having activated the square already
-//            getWorld()->getYoshi()->setHere();
-//        }
-//    }
 }
 
 bool Square::isActive() const{
@@ -203,9 +185,17 @@ void Coin::traverseAction(Player* plyr){return;}
 //**************
 Star::Star(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
 
-void Star::landAction(Player* plyr){}
+void Star::landAction(Player* plyr){
+    //If player cannot purchase star immediately return
+    if(plyr->getCoins()<20) return;
+    //Otherwise deduct 20 coins from player and give player a star
+    plyr->addCoins(-20);
+    plyr->addStars(1);
+    //Play sound for given star
+    getWorld()->playSound(SOUND_GIVE_STAR);
+}
 
-void Star::traverseAction(Player* plyr){return;}
+void Star::traverseAction(Player* plyr){landAction(plyr);}
 
 
 //*********************
