@@ -134,7 +134,6 @@ void Square::doSomething(){
     }
     //Check is Peach traverses a square
     if(getX()==getWorld()->getPeach()->getX() && getY()==getWorld()->getPeach()->getY()){
-        traverseAction(getWorld()->getPeach());
         //Check if Peach lands on a square
         if(getWorld()->getPeach()->hasLanded()){
             //Checks if Peach is new
@@ -144,10 +143,11 @@ void Square::doSomething(){
                 getWorld()->getPeach()->setHere();
             }
         }
+        else traverseAction(getWorld()->getPeach());
     }
     //Check is Yoshi traverses a square
     if(getX()==getWorld()->getYoshi()->getX() && getY()==getWorld()->getYoshi()->getY()){
-        traverseAction(getWorld()->getYoshi());
+        //Check if Yoshi lands on a square
         if(getWorld()->getYoshi()->hasLanded()){
             //Checks if Yoshi is new
             if(!getWorld()->getYoshi()->isHere()){
@@ -156,6 +156,7 @@ void Square::doSomething(){
                 getWorld()->getYoshi()->setHere();
             }
         }
+        else traverseAction(getWorld()->getYoshi());
     }
 }
 
