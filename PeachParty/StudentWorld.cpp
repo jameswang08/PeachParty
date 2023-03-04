@@ -105,13 +105,14 @@ int StudentWorld::move()
     }
     
     //Delete dead actors
-//    for(vector<Actor*>::iterator p = actors.begin();p < actors.end();){
-//        if(!((*p)->isAlive())){
-//            Actor* toBeDeleted = (*p);
-//            p = actors.erase(p);
-//            delete toBeDeleted;
-//        }
-//    }
+    for(vector<Actor*>::iterator p = actors.begin();p < actors.end();){
+        if(!((*p)->isAlive())){
+            Actor* toBeDeleted = (*p);
+            p = actors.erase(p);
+            delete toBeDeleted;
+        }
+        else p++;
+    }
     
     //Update game stats
     string p1Stats = "P1 Roll: " + to_string(peachPointer->getRoll()) + " Stars: " + to_string(peachPointer->getStars()) + " $$: " + to_string(peachPointer->getCoins());
@@ -169,7 +170,7 @@ void StudentWorld::setBal(int amt){
 void StudentWorld::convertSquare(int x, int y){
     for(int i=0;i<actors.size();i++){
         //If actor is square below bowser
-        if(!actors[i]->isLiving() && actors[i]->getX() == x && actors[i]->getY() == y){
+        if(!actors[i]->isLiving() && actors[i]->getX()/16 == x && actors[i]->getY()/16 == y){
             actors[i]->dead();
             break;
         }
