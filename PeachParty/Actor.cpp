@@ -25,7 +25,30 @@ bool Moves::canMove(int direction){
     getPositionInThisDirection(direction, 16, newX, newY);
     newX /=16;
     newY /=16;
-    return !getWorld()->isEmpty(newX,newY);
+    return !getWorld()->isEmpty(newX,newY) && newX > 0 && newX < BOARD_WIDTH && newY > 0 && newY < BOARD_HEIGHT;
+}
+
+void Moves::corner(){
+    if(getWalkDir() == right || getWalkDir() == left) canMove(up) ? setWalkDir(up) : setWalkDir(down);
+    else if(getWalkDir() == up || getWalkDir() == down) canMove(right) ? setWalkDir(right) : setWalkDir(left);
+}
+
+bool Moves::fork(){
+    int nDirs = 0; //Number of valid directions
+    if(canMove(up)) nDirs++;
+    if(canMove(right)) nDirs++;
+    if(canMove(down)) nDirs++;
+    if(canMove(left)) nDirs++;
+    if(nDirs>=3) return true;
+    return false;
+}
+
+void Moves::move(){
+    moveAtAngle(getWalkDir(), 2); //Move 2 pixels in walk direction
+    setTicks(getTicks()-1); //Decrement ticks to move count by 1
+    if(getTicks() == 0){
+        moveFunc();
+    }
 }
 
 int Moves::getWalkDir() const{
@@ -69,7 +92,7 @@ void Player::doSomething(){
             setTicks(dieRoll*8); //Change ticks to move
             setState(WALKING); //Player is now walking
             landed = false; //Player move away from square
-            here = false;
+            here = false; //Resets flag for square interaction
         }
         else return; //User doesn't press key, or presses another key
     }
@@ -77,18 +100,16 @@ void Player::doSomething(){
     if(getState()==WALKING){
         //Check if next tile is empty, and if so, adjust walk direction appropriately
         if(getX()%16==0 && getY()%16==0 && !canMove(getWalkDir())){
-            if(getWalkDir() == right || getWalkDir() == left) canMove(up) ? setWalkDir(up) : setWalkDir(down);
-            else if(getWalkDir() == up || getWalkDir() == down) canMove(right) ? setWalkDir(right) : setWalkDir(left);
-        }//if
-        (getWalkDir() == left) ? setDirection(left) : setDirection(right); //Set sprite direction to 180 deg if walking left otherwise set sprite direction to 0 deg
+            corner();
+        }
     }//if
-    moveAtAngle(getWalkDir(), 2); //Move 2 pixels in walk direction
-    setTicks(getTicks()-1); //Decrement ticks to move count by 1
-    if(getTicks() == 0){
-        setState(WAITING); //If ticks to move equals 0 then change state to waiting to roll
-        landed = true; //Player landed on square
-    }
+    move();
 };
+
+void Player::moveFunc(){
+    setState(WAITING); //If ticks to move equals 0 then change state to waiting to roll
+    landed = true; //Player landed on square
+}
 
 //Getters
 int Player::isWaiting() const{
@@ -119,7 +140,6 @@ int Player::getRoll() const{
     return dieRoll;
 }
 
-
 //Setters
 void Player::setHere(bool tf){
     here = tf;
@@ -141,27 +161,36 @@ void Player::setRoll(int n){
     dieRoll = n;
 }
 
-
 //****************
 //||BADDIE CLASS||
 //****************
-Baddie::Baddie(StudentWorld* whereAmI, int imageID, int startX, int startY):Moves(whereAmI, imageID, startX, startY), travelDist(0), pauseCounter(0), sTMove(0){}
+Baddie::Baddie(StudentWorld* whereAmI, int imageID, int startX, int startY):Moves(whereAmI, imageID, startX, startY), travelDist(0), pauseCounter(180), sTMove(0), peach(false), yoshi(false){}
 
 void Baddie::doSomething(){
+    //If paused
     if(getState()==PAUSED){
-        //If baddie on same square as player, and player is in a waiting state
+        //If baddie on same square as peach, and peach is in a waiting state
         if(getX()==getWorld()->getPeach()->getX() && getY()==getWorld()->getPeach()->getY() && getWorld()->getPeach()->isWaiting()){
-            //Simulate 50% chance
-            int coinFlip = randInt(1,2);
-            if(coinFlip==1){
-                //Cause player to lose all their stars and coins
-                getWorld()->getPeach()->addCoins(-getWorld()->getPeach()->getCoins());
-                getWorld()->getPeach()->addStars(-getWorld()->getPeach()->getStars());
-                getWorld()->playSound(SOUND_BOWSER_ACTIVATE);
-                
-                //Make sure player doesn't double trigger bowser
-            }//if bowser causes player to lose all coins/stars
+            //Checks if Peach is new
+            if(!metPeach()){
+                pausedAction();
+                //Marks Peach as having interacted with Baddie already
+                setPeach(true);
+            }//if new player
         }//if same square
+        else setPeach(false); //Peach moves away
+        
+        //If baddie on same square as yoshi, and yoshi is in a waiting state
+        if(getX()==getWorld()->getYoshi()->getX() && getY()==getWorld()->getYoshi()->getY() && getWorld()->getYoshi()->isWaiting()){
+            //Checks if Yoshi is new
+            if(!metYoshi()){
+                pausedAction();
+                //Marks Yoshi as having interacted with Baddie already
+                setYoshi(true);
+            }//if new player
+        }//if same square
+        else setYoshi(false); //Yoshi moves away
+        
         //Decrement pause counter
         pauseCounter--;
         if(pauseCounter==0){
@@ -178,20 +207,76 @@ void Baddie::doSomething(){
             
             //Set baddie to walking state
             setState(WALKING);
+            setPeach(false);
+            setYoshi(false);
         }
     }//if paused state
+    //If walking
+    if(getState()==WALKING){
+        //If on top of a square
+        if(getX()%16==0 && getY()%16==0 && fork()){
+            //Pick a random direction to walk in, that is legal
+            int newDir;
+            do{
+                newDir = randInt(0,3)*90;
+            }while(!canMove(newDir));
+            setWalkDir(newDir);
+        }
+        else if(getX()%16==0 && getY()%16==0 && !canMove(getWalkDir())){
+            corner();
+        }
+        //Move
+        move();
+    }
 }
 
+void Baddie::moveFunc(){
+    setState(PAUSED);
+    pauseCounter = 180;
+    int chance = randInt(1,4); //Simulate 25% chance
+    if(chance==1){
+        
+    }
+}
+
+bool Baddie::metPeach() const{
+    return peach;
+}
+
+bool Baddie::metYoshi() const{
+    return yoshi;
+}
+
+void Baddie::setPeach(bool tf){
+    peach = tf;
+}
+
+void Baddie::setYoshi(bool tf){
+    yoshi = tf;
+}
 
 //****************
 //||BOWSER CLASS||
 //****************
 Bowser::Bowser(StudentWorld* whereAmI, int imageID, int startX, int startY): Baddie(whereAmI, imageID, startX, startY){}
+void Bowser::pausedAction(){
+    //Simulate 50% chance
+    int coinFlip = randInt(1,2);
+    if(coinFlip==1){
+        //Cause player to lose all their stars and coins
+        getWorld()->getPeach()->addCoins(-getWorld()->getPeach()->getCoins());
+        getWorld()->getPeach()->addStars(-getWorld()->getPeach()->getStars());
+        getWorld()->playSound(SOUND_BOWSER_ACTIVATE);
+    }//if bowser causes player to lose all coins/stars
+}
+void Bowser::walkAction(){}
 
 //*************
 //||BOO CLASS||
 //*************
 Boo::Boo(StudentWorld* whereAmI, int imageID, int startX, int startY): Baddie(whereAmI, imageID, startX, startY){}
+void Boo::pausedAction(){}
+void Boo::walkAction(){}
 
 //****************
 //||Square CLASS||

@@ -24,6 +24,10 @@ class Moves: public Actor{
     
     //Helper funcs
     bool canMove(int direction); //Checks if player/baddie can move in this direction
+    void corner(); //Checks if player can't move forward, and if so then choose appropriate direction
+    bool fork(); //Checks for fork
+    virtual void move(); //Moves player/baddie
+    virtual void moveFunc() = 0; //Pure virtual func for when ticks to move = 0
     
     //Getters
     int getWalkDir() const; //Gets player/baddie walk direction
@@ -48,6 +52,7 @@ class Player: public Moves{
   public:
     Player(StudentWorld* whereAmI, int imageID, int startX, int startY);
     void doSomething();
+    void moveFunc();
 
     //Getters
     int isWaiting() const; //Checks if player is in waiting state
@@ -59,7 +64,7 @@ class Player: public Moves{
     int getRoll() const; //Checks player's die roll
 
     //Setters
-    void setHere(bool tf); //Sets here to true;
+    void setHere(bool tf); //Sets here to tf
     void addStars(int amt); //Adds stars to players stars
     void addCoins(int amt); //Adds coins to players coins
     void toggleVortex(); //Sets vortex to opposite of what it was before
@@ -85,18 +90,35 @@ class Baddie: public Moves{
   public:
     Baddie(StudentWorld* whereAmI, int imageID, int startX, int startY);
     void doSomething();
+    void moveFunc();
+    virtual void pausedAction() = 0;
+    virtual void walkAction() = 0;
+    
+    //Getters
+    bool metPeach() const; //Getter for peach contact
+    bool metYoshi() const; //Getter for yoshi contact
+    
+    //Setters
+    void setPeach(bool tf); //Setter for peach contact
+    void setYoshi(bool tf); //Setter for yoshi contact
+    
   private:
     static const int PAUSED = 0;
     static const int WALKING = 1;
     int travelDist; //Travel distance
     int pauseCounter; //Pause counter
     int sTMove; //Squares to move
+    bool peach; //Checks if in contact w/ peach
+    bool yoshi; //Checks if baddie in contact w/ yoshi
+    
 };
 
 //Derived class for bowser
 class Bowser: public Baddie{
   public:
     Bowser(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    void pausedAction();
+    void walkAction();
   private:
 };
 
@@ -104,6 +126,8 @@ class Bowser: public Baddie{
 class Boo: public Baddie{
   public:
     Boo(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    void pausedAction();
+    void walkAction();
   private:
 };
 

@@ -79,13 +79,13 @@ int StudentWorld::init()
                     break;
                 //Boswer tile
                 case(Board::bowser):
-                    actors.push_back(new Bowser(this,IID_BOWSER, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
                     actors.push_back(new Coin(this, IID_BLUE_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT,3));
+                    actors.push_back(new Bowser(this,IID_BOWSER, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
                     break;
                 //Boo tile
                 case(Board::boo):
-                    actors.push_back(new Boo(this,IID_BOO, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
                     actors.push_back(new Coin(this, IID_BLUE_COIN_SQUARE, c*SPRITE_WIDTH,r*SPRITE_HEIGHT,3));
+                    actors.push_back(new Boo(this,IID_BOO, c*SPRITE_WIDTH,r*SPRITE_HEIGHT));
                     break;
             }
         }//for
