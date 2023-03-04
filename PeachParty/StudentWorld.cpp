@@ -90,7 +90,6 @@ int StudentWorld::init()
             }
         }//for
     }//for
-    
 	startCountdownTimer(99);  //Begin game timer
     return GWSTATUS_CONTINUE_GAME;
 }
@@ -108,10 +107,10 @@ int StudentWorld::move()
     //Update game stats
     string p1Stats = "P1 Roll: " + to_string(peachPointer->getRoll()) + " Stars: " + to_string(peachPointer->getStars()) + " $$: " + to_string(peachPointer->getCoins());
     peachPointer->hasVortex() ? p1Stats+=" VOR | " : p1Stats+=" | ";
-    
+
     string p2Stats = "P2 Roll: " + to_string(yoshiPointer->getRoll()) + " Stars: " + to_string(yoshiPointer->getStars()) + " $$: " + to_string(yoshiPointer->getCoins());
     if(yoshiPointer->hasVortex()) p2Stats+=" VOR";
-    
+
     setGameStatText(p1Stats + "Time: " + to_string(timeRemaining()) + " | Bank: " + to_string(getBal()) + " | " + p2Stats );
     
     if (timeRemaining() <= 0){

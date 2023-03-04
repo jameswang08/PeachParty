@@ -168,9 +168,10 @@ void Square::doSomething(){
         if(getWorld()->getPeach()->hasLanded()){
             //Checks if Peach is new
             if(!getWorld()->getPeach()->isHere()){
-                landAction(getWorld()->getPeach());
                 //Marks Peach as having activated square already
                 getWorld()->getPeach()->setHere(true);
+                
+                landAction(getWorld()->getPeach());
             }
         }
         else traverseAction(getWorld()->getPeach());
@@ -181,9 +182,10 @@ void Square::doSomething(){
         if(getWorld()->getYoshi()->hasLanded()){
             //Checks if Yoshi is new
             if(!getWorld()->getYoshi()->isHere()){
-                landAction(getWorld()->getYoshi());
                 //Marks Yoshi as having activated the square already
                 getWorld()->getYoshi()->setHere(true);
+                
+                landAction(getWorld()->getYoshi());
             }
         }
         else traverseAction(getWorld()->getYoshi());
