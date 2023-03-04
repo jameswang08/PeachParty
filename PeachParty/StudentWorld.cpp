@@ -156,3 +156,17 @@ int StudentWorld::getBal() const{
 void StudentWorld::setBal(int amt){
     bankAcc = amt;
 }
+
+void StudentWorld::convertSquare(int x, int y){
+    for(int i=0;i<actors.size();i++){
+        //If actor is square below bowser
+        if(!actors[i]->isLiving() && actors[i]->getX() == x && actors[i]->getY() == y){
+            actors[i]->dead();
+            break;
+        }
+    }
+    //Create dropping square in place of dead square
+    actors.push_back(new Dropping(this,IID_DROPPING_SQUARE, x*SPRITE_WIDTH,y*SPRITE_HEIGHT));
+    //Play sound
+    playSound(SOUND_DROPPING_SQUARE_CREATED);
+}

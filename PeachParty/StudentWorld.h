@@ -21,6 +21,7 @@ class StudentWorld : public GameWorld
     Player* getYoshi();
     int getBal() const; //Returns number of coins in the bank
     void setBal(int amt); //Sets the number of coins in the bank
+    void convertSquare(int x, int y); //Converts square at given coordinates to dropping square
   private:
     std::vector<Actor*> actors; //Vector containing list of all actors, except for Peach and Yoshi
     Player* peachPointer; //Pointer to Peach Actor

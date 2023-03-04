@@ -6,19 +6,34 @@
 //***************
 //||ACTOR CLASS||
 //***************
-Actor::Actor(StudentWorld* whereAmI, int imageID, int startX, int startY, int dir, int depth, double size):GraphObject(imageID, startX, startY, dir, depth, size){
+Actor::Actor(StudentWorld* whereAmI, int imageID, int startX, int startY, int dir, int depth, double size):GraphObject(imageID, startX, startY, dir, depth, size), aliveStatus(true){
     world = whereAmI;
 }
 StudentWorld* Actor::getWorld() const{
     return world;
 }
 
+bool Actor::isLiving(){
+    return false;
+}
+
+bool Actor::isAlive() const{
+    return aliveStatus;
+}
+
+void Actor::dead(){
+    aliveStatus = false;
+}
+
 //***********
 //MOVES CLASS
 //***********
 Moves::Moves(StudentWorld* whereAmI, int imageID, int startX, int startY):
-    Actor(whereAmI,imageID,startX,startY,right,0,1), walkDir(right), state(PAUSED_OR_WAITING), tTMove(0)
-{}
+    Actor(whereAmI,imageID,startX,startY,right,0,1), walkDir(right), state(PAUSED_OR_WAITING), tTMove(0){}
+
+bool Moves::isLiving(){
+    return true;
+}
 
 bool Moves::canMove(int direction){
     int newX, newY;
@@ -235,7 +250,7 @@ void Baddie::moveFunc(){
     pauseCounter = 180;
     int chance = randInt(1,4); //Simulate 25% chance
     if(chance==1){
-        
+        getWorld()->convertSquare(getX()/16, getY()/16);
     }
 }
 
@@ -281,11 +296,11 @@ void Boo::walkAction(){}
 //****************
 //||Square CLASS||
 //****************
-Square::Square(StudentWorld* whereAmI, int imageID, int startX, int startY):Actor(whereAmI, imageID,startX,startY,right,1,1), aliveStatus(true){}
+Square::Square(StudentWorld* whereAmI, int imageID, int startX, int startY):Actor(whereAmI, imageID,startX,startY,right,1,1){}
 
 void Square::doSomething(){
     //Check if square is alive
-    if(!isActive()){
+    if(!isAlive()){
         return;
     }
     //Check is Peach traverses a square
@@ -316,10 +331,6 @@ void Square::doSomething(){
         }
         else traverseAction(getWorld()->getYoshi());
     }
-}
-
-bool Square::isActive() const{
-    return aliveStatus;
 }
 
 //**************

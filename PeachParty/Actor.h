@@ -10,10 +10,13 @@ class Actor: public GraphObject{
     Actor(StudentWorld* whereAmI, int imageID, int startX, int startY, int dir = right, int depth = 0, double size = 1.0);
     virtual void doSomething() = 0;
     StudentWorld* getWorld() const;
-    
+    virtual bool isLiving(); //Only Players/Baddies are living
+    bool isAlive() const; //Checks if actor is alive or dead
+    void dead(); //Sets actor to dead
   private:
     int spriteDirection; //Sprite Direction
-    StudentWorld* world;
+    StudentWorld* world; //Pointer to world actors are in
+    bool aliveStatus; //Indicates whether actor is alive or dead
 };
 
 //Base class for player and baddie
@@ -21,6 +24,7 @@ class Moves: public Actor{
   public:
     Moves(StudentWorld* whereAmI, int imageID, int startX, int startY);
     virtual void doSomething() = 0;
+    bool isLiving(); //Only living things move
     
     //Helper funcs
     bool canMove(int direction); //Checks if player/baddie can move in this direction
@@ -136,11 +140,9 @@ class Square: public Actor{
   public:
     Square(StudentWorld* whereAmI, int imageID, int startX, int startY);
     virtual void doSomething();
-    bool isActive()  const; //Checks if coin square is alive or dead
     virtual void landAction(Player* plyr) = 0;//Specialized square action for if player lands on square
     virtual void traverseAction(Player* plyr) = 0;//Specialized square action for if player traverses square
   private:
-    bool aliveStatus; //Whether the block is active or not
 };
 
 //Derived class for coin square
