@@ -97,6 +97,7 @@ class Baddie: public Moves{
     virtual void moveFunc() = 0; //Func for what baddie does when they are walking
     virtual void pausedAction(Player* plyr) = 0; //Func for what baddie does when they are paused
     virtual int nSquares() = 0; //Func to get random num of squares to move
+    void moveInRandDir(); //Moves baddie in random direction;
     
     //Getters
     bool metPeach() const; //Getter for peach contact

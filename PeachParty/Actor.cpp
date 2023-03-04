@@ -214,12 +214,8 @@ void Baddie::doSomething(){
             setTicks(sTMove*8);
             
             //Pick a new random direction to walk in, that is legal
-            int newDir;
-            do{
-                newDir = randInt(0,3)*90;
-            }while(!canMove(newDir) || getWalkDir()==newDir);
-            setWalkDir(newDir);
-            
+            moveInRandDir();
+
             //Set baddie to walking state
             setState(WALKING);
             setPeach(false);
@@ -231,11 +227,7 @@ void Baddie::doSomething(){
         //If on top of a square
         if(getX()%16==0 && getY()%16==0 && fork()){
             //Pick a random direction to walk in, that is legal
-            int newDir;
-            do{
-                newDir = randInt(0,3)*90;
-            }while(!canMove(newDir));
-            setWalkDir(newDir);
+            moveInRandDir();
         }
         //Else if can't move forward
         else if(getX()%16==0 && getY()%16==0 && !canMove(getWalkDir())){
@@ -244,6 +236,14 @@ void Baddie::doSomething(){
         //Move
         move();
     }
+}
+
+void Baddie::moveInRandDir(){
+    int newDir;
+    do{
+        newDir = randInt(0,3)*90;
+    }while(!canMove(newDir));
+    setWalkDir(newDir);
 }
 
 bool Baddie::metPeach() const{

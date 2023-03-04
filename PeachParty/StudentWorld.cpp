@@ -98,11 +98,20 @@ int StudentWorld::move()
 {
     
     //Ask actors to do something
-    //Check is things die later..
     peachPointer->doSomething();
+    //Implement yoshi later
     for(int i=0;i<actors.size();i++){
         actors[i]->doSomething();
     }
+    
+    //Delete dead actors
+//    for(vector<Actor*>::iterator p = actors.begin();p < actors.end();){
+//        if(!((*p)->isAlive())){
+//            Actor* toBeDeleted = (*p);
+//            p = actors.erase(p);
+//            delete toBeDeleted;
+//        }
+//    }
     
     //Update game stats
     string p1Stats = "P1 Roll: " + to_string(peachPointer->getRoll()) + " Stars: " + to_string(peachPointer->getStars()) + " $$: " + to_string(peachPointer->getCoins());
@@ -116,7 +125,7 @@ int StudentWorld::move()
     if (timeRemaining() <= 0){
         playSound(SOUND_GAME_FINISHED); //Play sound when game ends
         
-        //Placeholder for evaluating which player won
+        //Placeholder for evaluating which player won IMPLEMENT
         return GWSTATUS_PEACH_WON;
     }
     
