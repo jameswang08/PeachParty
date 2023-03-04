@@ -333,8 +333,14 @@ void Event::landAction(Player* plyr){
             p2->setState(tempState);
             
             //Makes sure swapped player doesn't reactivate event square
-            p1->setHere(true);
-            p2->setHere(true);
+            if(plyr==p1){
+                p1->setHere(false);
+                p2->setHere(true);
+            }
+            else{
+                p1->setHere(true);
+                p2->setHere(false);
+            }
             
             //Play teleport sound
             getWorld()->playSound(SOUND_PLAYER_TELEPORT);
