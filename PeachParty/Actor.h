@@ -94,9 +94,9 @@ class Baddie: public Moves{
   public:
     Baddie(StudentWorld* whereAmI, int imageID, int startX, int startY);
     void doSomething();
-    void moveFunc();
-    virtual void pausedAction() = 0;
-    virtual void walkAction() = 0;
+    virtual void moveFunc() = 0; //Func for what baddie does when they are walking
+    virtual void pausedAction(Player* plyr) = 0; //Func for what baddie does when they are paused
+    virtual int nSquares() = 0; //Func to get random num of squares to move
     
     //Getters
     bool metPeach() const; //Getter for peach contact
@@ -105,6 +105,7 @@ class Baddie: public Moves{
     //Setters
     void setPeach(bool tf); //Setter for peach contact
     void setYoshi(bool tf); //Setter for yoshi contact
+    void setPC(int amt); //Setter for pauseCounter
     
   private:
     static const int PAUSED = 0;
@@ -121,18 +122,24 @@ class Baddie: public Moves{
 class Bowser: public Baddie{
   public:
     Bowser(StudentWorld* whereAmI, int imageID, int startX, int startY);
-    void pausedAction();
-    void walkAction();
+    void pausedAction(Player* plyr);
+    void moveFunc(); //Specialized func for bowser movement
+    int nSquares(); //Return random number of squares to move
   private:
+    static const int PAUSED = 0;
+    static const int WALKING = 1;
 };
 
 //Derived class for boo
 class Boo: public Baddie{
   public:
     Boo(StudentWorld* whereAmI, int imageID, int startX, int startY);
-    void pausedAction();
-    void walkAction();
+    void pausedAction(Player* plyr);
+    void moveFunc(); //Specialized func for boo movement
+    int nSquares(); //Return random number of squares to move
   private:
+    static const int PAUSED = 0;
+    static const int WALKING = 1;
 };
 
 //Square base class for all the squares

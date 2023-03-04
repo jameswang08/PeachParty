@@ -188,7 +188,7 @@ void Baddie::doSomething(){
         if(getX()==getWorld()->getPeach()->getX() && getY()==getWorld()->getPeach()->getY() && getWorld()->getPeach()->isWaiting()){
             //Checks if Peach is new
             if(!metPeach()){
-                pausedAction();
+                pausedAction(getWorld()->getPeach());
                 //Marks Peach as having interacted with Baddie already
                 setPeach(true);
             }//if new player
@@ -199,7 +199,7 @@ void Baddie::doSomething(){
         if(getX()==getWorld()->getYoshi()->getX() && getY()==getWorld()->getYoshi()->getY() && getWorld()->getYoshi()->isWaiting()){
             //Checks if Yoshi is new
             if(!metYoshi()){
-                pausedAction();
+                pausedAction(getWorld()->getYoshi());
                 //Marks Yoshi as having interacted with Baddie already
                 setYoshi(true);
             }//if new player
@@ -210,7 +210,7 @@ void Baddie::doSomething(){
         pauseCounter--;
         if(pauseCounter==0){
             //Set squares to move to random num [1,10]
-            sTMove = randInt(1,10);
+            sTMove = nSquares();
             setTicks(sTMove*8);
             
             //Pick a new random direction to walk in, that is legal
@@ -237,20 +237,12 @@ void Baddie::doSomething(){
             }while(!canMove(newDir));
             setWalkDir(newDir);
         }
+        //Else if can't move forward
         else if(getX()%16==0 && getY()%16==0 && !canMove(getWalkDir())){
             corner();
         }
         //Move
         move();
-    }
-}
-
-void Baddie::moveFunc(){
-    setState(PAUSED);
-    pauseCounter = 180;
-    int chance = randInt(1,4); //Simulate 25% chance
-    if(chance==1){
-        getWorld()->convertSquare(getX()/16, getY()/16);
     }
 }
 
@@ -270,28 +262,82 @@ void Baddie::setYoshi(bool tf){
     yoshi = tf;
 }
 
+void Baddie::setPC(int amt){
+    pauseCounter = amt;
+}
+
 //****************
 //||BOWSER CLASS||
 //****************
 Bowser::Bowser(StudentWorld* whereAmI, int imageID, int startX, int startY): Baddie(whereAmI, imageID, startX, startY){}
-void Bowser::pausedAction(){
+void Bowser::pausedAction(Player* plyr){
     //Simulate 50% chance
     int coinFlip = randInt(1,2);
     if(coinFlip==1){
         //Cause player to lose all their stars and coins
-        getWorld()->getPeach()->addCoins(-getWorld()->getPeach()->getCoins());
-        getWorld()->getPeach()->addStars(-getWorld()->getPeach()->getStars());
+        plyr->addCoins(-plyr->getCoins());
+        plyr->addStars(-plyr->getStars());
         getWorld()->playSound(SOUND_BOWSER_ACTIVATE);
     }//if bowser causes player to lose all coins/stars
 }
-void Bowser::walkAction(){}
+void Bowser::moveFunc(){
+    setState(PAUSED);
+    setPC(180);
+    int chance = randInt(1,4); //Simulate 25% chance
+    if(chance==1){
+        getWorld()->convertSquare(getX()/16, getY()/16);
+    }
+}
+
+int Bowser::nSquares(){
+    return randInt(1,10);
+}
 
 //*************
 //||BOO CLASS||
 //*************
 Boo::Boo(StudentWorld* whereAmI, int imageID, int startX, int startY): Baddie(whereAmI, imageID, startX, startY){}
-void Boo::pausedAction(){}
-void Boo::walkAction(){}
+
+void Boo::pausedAction(Player* plyr){
+    
+    Player* p1 = getWorld()->getPeach();
+    Player* p2 = getWorld()->getYoshi();
+    
+    //Simulate 50/50 chance
+    int coinFlip = randInt(1,2);
+    switch(coinFlip){
+        //Swap players coins
+        case 1:
+        {
+            //Store p1 value
+            int tempC = p1->getCoins();
+            
+            //Swap p1 coins w/ p2 coins
+            p1->addCoins(-tempC+p2->getCoins());
+            
+            //Swap p2 coins w/ p1 coins
+            p2->addCoins(-p2->getCoins()+tempC);
+            break;
+        }//case 1
+        //Swap players stars
+        case 2:
+        {
+            //Store p1 value
+            int tempS = p1->getStars();
+            
+            //Swap p1 stars w/ p2 stars
+            p1->addStars(-tempS+p2->getStars());
+            
+            //Swap p2 stars w/ p1 stars
+            p2->addStars(-p2->getStars()+tempS);
+            break;
+        }//case 2
+    }
+}
+void Boo::moveFunc(){
+    setState(PAUSED);
+    setPC(180);
+}
 
 //****************
 //||Square CLASS||
@@ -331,6 +377,10 @@ void Square::doSomething(){
         }
         else traverseAction(getWorld()->getYoshi());
     }
+}
+
+int Boo::nSquares(){
+    return randInt(1,3);
 }
 
 //**************
