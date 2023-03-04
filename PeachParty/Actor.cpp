@@ -25,6 +25,13 @@ void Actor::dead(){
     aliveStatus = false;
 }
 
+bool Actor::isImpactable() const{
+    return false;
+}
+
+//Empty because by defualt actors are no impactable
+void Actor::hit(){}
+
 //***********
 //MOVES CLASS
 //***********
@@ -252,6 +259,10 @@ bool Baddie::metPeach() const{
 
 bool Baddie::metYoshi() const{
     return yoshi;
+}
+
+bool Baddie::isImpactable() const{
+    return true;
 }
 
 void Baddie::setPeach(bool tf){
@@ -577,3 +588,28 @@ void Dropping::landAction(Player* plyr){
 
 void Dropping::traverseAction(Player* plyr){}
 
+//************
+//VORTEX CLASS
+//************
+Vortex::Vortex(StudentWorld* whereAmI, int imageID, int startX, int startY, int dir):
+Actor(whereAmI, imageID, startX, startY, right, 0, 1), walkDir(dir){}
+
+void Vortex::doSomething(){
+    if(!isAlive()) return;
+    moveAtAngle(walkDir, 2); //Move 2 pixels in walk direction
+    //Marks vortex as dead if it goes out of bounds
+    if(getX()<0 || getX()>=VIEW_WIDTH || getY()<0 || getY()>=VIEW_HEIGHT){
+        dead();
+        return;
+    }
+    //Checks for impactable actor overlapping with vortex
+    Actor* impactedActor = getWorld()->impactCheck(getX(), getY());
+    //If such an actor is found
+    if(impactedActor != nullptr){
+        impactedActor->hit();
+        //Set vortex to dead
+        dead();
+        //Play vortex hit sound
+        getWorld()->playSound(SOUND_HIT_BY_VORTEX);
+    }
+}

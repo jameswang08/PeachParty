@@ -180,3 +180,18 @@ void StudentWorld::convertSquare(int x, int y){
     //Play sound
     playSound(SOUND_DROPPING_SQUARE_CREATED);
 }
+
+Actor* StudentWorld::impactCheck(int x, int y){
+    Actor* anActor = nullptr;
+    for(int i=0;i<actors.size();i++){
+        //Search for impactable actor
+        if(actors[i]->isImpactable()){
+            //If impactable made contact with vortex, return the overlapping, impactable vortex
+            if(abs(actors[i]->getX() - x) < SPRITE_WIDTH || abs(actors[i]->getY() - y) < SPRITE_HEIGHT){
+                anActor = actors[i];
+                break;
+            }
+        }
+    }
+    return anActor;
+}

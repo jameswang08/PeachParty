@@ -13,6 +13,8 @@ class Actor: public GraphObject{
     virtual bool isLiving(); //Only Players/Baddies are living
     bool isAlive() const; //Checks if actor is alive or dead
     void dead(); //Sets actor to dead
+    virtual bool isImpactable() const; //Indicates whether actor is impactable or not
+    virtual void hit(); //Func for what actor should do, if it gets hit by a vortex
   private:
     int spriteDirection; //Sprite Direction
     StudentWorld* world; //Pointer to world actors are in
@@ -102,6 +104,7 @@ class Baddie: public Moves{
     //Getters
     bool metPeach() const; //Getter for peach contact
     bool metYoshi() const; //Getter for yoshi contact
+    bool isImpactable() const; //Baddies are impactable
     
     //Setters
     void setPeach(bool tf); //Setter for peach contact
@@ -209,6 +212,15 @@ class Dropping: public Square{
     void landAction(Player* plyr);
     void traverseAction(Player* plyr);
   private:
+};
+
+//Derived class for vortex
+class Vortex: public Actor{
+  public:
+    Vortex(StudentWorld* whereAmI, int imageID, int startX, int startY, int dir);
+    void doSomething();
+  private:
+    int walkDir;
 };
 
 #endif // ACTOR_H_
