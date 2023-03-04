@@ -87,6 +87,10 @@ int Player::getTicks() const{
     return tTMove;
 }
 
+int Player::isWaiting() const{
+    return state==WAITING;
+}
+
 int Player::getState() const{
     return state;
 }
@@ -133,9 +137,42 @@ void Player::setState(int newState){
 //****************
 //||BADDIE CLASS||
 //****************
-Baddie::Baddie(StudentWorld* whereAmI, int imageID, int startX, int startY):Actor(whereAmI,imageID,startX,startY,right,0,1), walkDir(right), state(PAUSED), travelDist(0), pauseCounter(0){}
+Baddie::Baddie(StudentWorld* whereAmI, int imageID, int startX, int startY):Actor(whereAmI,imageID,startX,startY,right,0,1), walkDir(right), state(PAUSED), travelDist(0), pauseCounter(0), sTMove(0), tTMove(0){}
 
-void Baddie::doSomething(){}
+void Baddie::doSomething(){
+    if(state==PAUSED){
+        //If baddie on same square as player, and player is in a waiting state
+        if(getX()==getWorld()->getPeach()->getX() && getY()==getWorld()->getPeach()->getY() && getWorld()->getPeach()->isWaiting()){
+            //Simulate 50% chance
+            int coinFlip = randInt(1,2);
+            if(coinFlip==1){
+                //Cause player to lose all their stars and coins
+                getWorld()->getPeach()->addCoins(-getWorld()->getPeach()->getCoins());
+                getWorld()->getPeach()->addStars(-getWorld()->getPeach()->getStars());
+                getWorld()->playSound(SOUND_BOWSER_ACTIVATE);
+                
+                //Make sure player doesn't double trigger bowser
+            }//if bowser causes player to lose all coins/stars
+        }//if same square
+        //Decrement pause counter
+        pauseCounter--;
+        if(pauseCounter==0){
+            //Set squares to move to random num [1,10]
+            sTMove = randInt(1,10);
+            tTMove = sTMove*8;
+            
+            //IMPLEMENT THIS
+            //Pick a new random direction to walk in, that is legal
+            int newDir = randInt(0,3)*90;
+            if(newDir!=walkDir){
+            }
+            
+            
+            //Set baddie to walking state
+            state = WALKING;
+        }
+    }//if paused state
+}
 
 
 //****************
@@ -143,14 +180,10 @@ void Baddie::doSomething(){}
 //****************
 Bowser::Bowser(StudentWorld* whereAmI, int imageID, int startX, int startY): Baddie(whereAmI, imageID, startX, startY){}
 
-void Bowser::doSomething(){}
-
 //*************
 //||BOO CLASS||
 //*************
 Boo::Boo(StudentWorld* whereAmI, int imageID, int startX, int startY): Baddie(whereAmI, imageID, startX, startY){}
-
-void Boo::doSomething(){}
 
 //****************
 //||Square CLASS||

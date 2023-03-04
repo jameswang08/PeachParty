@@ -16,6 +16,14 @@ class Actor: public GraphObject{
     StudentWorld* world;
 };
 
+class Moves: public Actor{
+  public:
+    Moves(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    virtual void doSomething() = 0;
+  private:
+    
+};
+
 class Player: public Actor{
   public:
     Player(StudentWorld* whereAmI, int imageID, int startX, int startY);
@@ -31,7 +39,8 @@ class Player: public Actor{
     int getRoll() const; //Checks player's die roll
     int getTicks() const; //Gets number of ticks player has left to move
     int getWalkDir() const; //Gets player's walk direction
-    int getState() const; //Gets plyer's state
+    int getState() const; //Gets player's state
+    int isWaiting() const; //Checks if player is in waiting state
 
     //Setters
     void setHere(bool tf); //Sets here to true;
@@ -64,7 +73,7 @@ class Player: public Actor{
 class Baddie: public Actor{
   public:
     Baddie(StudentWorld* whereAmI, int imageID, int startX, int startY);
-    virtual void doSomething();
+    void doSomething();
   private:
     static const int WALKING = 1;
     static const int PAUSED = 2;
@@ -72,13 +81,14 @@ class Baddie: public Actor{
     int state; //State, WALKING or PAUSED
     int travelDist; //Travel distance
     int pauseCounter; //Pause counter
+    int sTMove; //Squares to move
+    int tTMove; //ticks to move
 };
 
 //Derived class for bowser
 class Bowser: public Baddie{
   public:
     Bowser(StudentWorld* whereAmI, int imageID, int startX, int startY);
-    void doSomething();
   private:
 };
 
@@ -86,7 +96,6 @@ class Bowser: public Baddie{
 class Boo: public Baddie{
   public:
     Boo(StudentWorld* whereAmI, int imageID, int startX, int startY);
-    void doSomething();
   private:
 };
 
