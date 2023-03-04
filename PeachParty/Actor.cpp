@@ -360,7 +360,25 @@ void Event::traverseAction(Player* plyr){}
 //******************
 Dropping::Dropping(StudentWorld* whereAmI, int imageID, int startX, int startY):Square(whereAmI,imageID, startX, startY){}
 
-void Dropping::landAction(Player* plyr){}
+void Dropping::landAction(Player* plyr){
+    int randOption = randInt(1,2);
+    switch(randOption){
+        //Deduct 10 coins, or as many as possible if player has less than 10 coins, from player
+        case 1:
+        {
+            int pBal = plyr->getCoins();
+            pBal<10 ? plyr->addCoins(-pBal) : plyr->addCoins(-10);
+            break;
+        }
+        //Deduct a star from player, if they have at least one star
+        case 2:
+        {
+            if(plyr->getStars()>0) plyr->addStars(-1);
+        }
+    }
+    //Play dropping square sound
+    getWorld()->playSound(SOUND_DROPPING_SQUARE_ACTIVATE);
+}
 
-void Dropping::traverseAction(Player* plyr){return;}
+void Dropping::traverseAction(Player* plyr){}
 
