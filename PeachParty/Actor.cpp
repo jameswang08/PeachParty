@@ -13,44 +13,14 @@ StudentWorld* Actor::getWorld() const{
     return world;
 }
 
-//****************
-//||PLAYER CLASS||
-//****************
-Player::Player(StudentWorld* whereAmI, int imageID, int startX, int startY)
-:Actor(whereAmI,imageID,startX,startY,right,0,1), dieRoll(0), walkDir(right), state(WAITING), tTMove(0) ,nCoins(0), nStars(0), vortex(false), landed(false), here(false){}
+//***********
+//MOVES CLASS
+//***********
+Moves::Moves(StudentWorld* whereAmI, int imageID, int startX, int startY):
+    Actor(whereAmI,imageID,startX,startY,right,0,1), walkDir(right), state(PAUSED_OR_WAITING), tTMove(0)
+{}
 
-void Player::doSomething(){
-    //If Player to Move
-    if(state==WAITING){
-        //Check if avatar is facing valid direction and fix if not
-        //If user decides to roll die
-        if(getWorld()->getAction(P1)==ACTION_ROLL){
-            dieRoll = randInt(1,10); //Generate random die roll
-            tTMove = dieRoll*8; //Change ticks to move
-            state = WALKING; //Player is now walking
-            landed = false; //Player move away from square
-            here = false;
-        }
-        else return; //User doesn't press key, or presses another key
-    }
-    //If user is walking
-    if(state==WALKING){
-        //Check if next tile is empty, and if so, adjust walk direction appropriately
-        if(getX()%16==0 && getY()%16==0 && !canMove(walkDir)){
-            if(walkDir == right || walkDir == left) canMove(up) ? walkDir = up : walkDir = down;
-            else if(walkDir == up || walkDir == down) canMove(right) ? walkDir = right : walkDir = left;
-        }//if
-        (walkDir == left) ? setDirection(left) : setDirection(right); //Set sprite direction to 180 deg if walking left otherwise set sprite direction to 0 deg
-    }//if
-    moveAtAngle(walkDir, 2); //Move 2 pixels in walk direction
-    tTMove--; //Decrement ticks to move count by 1
-    if(tTMove == 0){
-        state = WAITING; //If ticks to move equals 0 then change state to waiting to roll
-        landed = true; //Player landed on square
-    }
-};
-
-bool Player::canMove(int direction){
+bool Moves::canMove(int direction){
     int newX, newY;
     getPositionInThisDirection(direction, 16, newX, newY);
     newX /=16;
@@ -58,7 +28,73 @@ bool Player::canMove(int direction){
     return !getWorld()->isEmpty(newX,newY);
 }
 
+int Moves::getWalkDir() const{
+    return walkDir;
+}
+
+int Moves::getState() const{
+    return state;
+}
+
+int Moves::getTicks() const{
+    return tTMove;
+}
+
+void Moves::setState(int newState){
+    state = newState;
+}
+
+void Moves::setWalkDir(int newDir){
+    walkDir = newDir;
+    //Adjust sprite direction accordingly
+    (newDir == left) ? setDirection(left) : setDirection(right); //Set sprite direction to 180 deg if walking left otherwise set sprite direction to 0 deg
+}
+void Moves::setTicks(int amt){
+    tTMove = amt;
+}
+
+//****************
+//||PLAYER CLASS||
+//****************
+Player::Player(StudentWorld* whereAmI, int imageID, int startX, int startY)
+:Moves(whereAmI, imageID, startX, startY), dieRoll(0), nCoins(0), nStars(0), vortex(false), landed(false), here(false){}
+
+void Player::doSomething(){
+    //If Player to Move
+    if(getState()==WAITING){
+        //Check if avatar is facing valid direction and fix if not
+        //If user decides to roll die
+        if(getWorld()->getAction(P1)==ACTION_ROLL){
+            dieRoll = randInt(1,10); //Generate random die roll
+            setTicks(dieRoll*8); //Change ticks to move
+            setState(WALKING); //Player is now walking
+            landed = false; //Player move away from square
+            here = false;
+        }
+        else return; //User doesn't press key, or presses another key
+    }
+    //If user is walking
+    if(getState()==WALKING){
+        //Check if next tile is empty, and if so, adjust walk direction appropriately
+        if(getX()%16==0 && getY()%16==0 && !canMove(getWalkDir())){
+            if(getWalkDir() == right || getWalkDir() == left) canMove(up) ? setWalkDir(up) : setWalkDir(down);
+            else if(getWalkDir() == up || getWalkDir() == down) canMove(right) ? setWalkDir(right) : setWalkDir(left);
+        }//if
+        (getWalkDir() == left) ? setDirection(left) : setDirection(right); //Set sprite direction to 180 deg if walking left otherwise set sprite direction to 0 deg
+    }//if
+    moveAtAngle(getWalkDir(), 2); //Move 2 pixels in walk direction
+    setTicks(getTicks()-1); //Decrement ticks to move count by 1
+    if(getTicks() == 0){
+        setState(WAITING); //If ticks to move equals 0 then change state to waiting to roll
+        landed = true; //Player landed on square
+    }
+};
+
 //Getters
+int Player::isWaiting() const{
+    return getState()==WAITING;
+}
+
 bool Player::hasLanded() const{
     return landed;
 }
@@ -67,12 +103,12 @@ bool Player::isHere() const{
     return here;
 }
 
-int Player::getCoins() const{
-    return nCoins;
-}
-
 int Player::getStars() const{
     return nStars;
+}
+
+int Player::getCoins() const{
+    return nCoins;
 }
 
 bool Player::hasVortex() const{
@@ -83,64 +119,36 @@ int Player::getRoll() const{
     return dieRoll;
 }
 
-int Player::getTicks() const{
-    return tTMove;
-}
-
-int Player::isWaiting() const{
-    return state==WAITING;
-}
-
-int Player::getState() const{
-    return state;
-}
-
-int Player::getWalkDir() const{
-    return walkDir;
-}
 
 //Setters
 void Player::setHere(bool tf){
     here = tf;
 }
 
-void Player::addCoins(int amt){
-    nCoins += amt;
-}
-
 void Player::addStars(int amt){
     nStars+=amt;
 }
 
-void Player::setWalkDir(int dir){
-    walkDir = dir;
-    //Adjust sprite direction accordingly
-    (dir == left) ? setDirection(left) : setDirection(right); //Set sprite direction to 180 deg if walking left otherwise set sprite direction to 0 deg
+void Player::addCoins(int amt){
+    nCoins += amt;
 }
 
 void Player::toggleVortex(){
     vortex = !vortex;
 }
 
-void Player::setTicks(int amt){
-    tTMove = amt;
-}
-
 void Player::setRoll(int n){
     dieRoll = n;
 }
 
-void Player::setState(int newState){
-    state = newState;
-}
 
 //****************
 //||BADDIE CLASS||
 //****************
-Baddie::Baddie(StudentWorld* whereAmI, int imageID, int startX, int startY):Actor(whereAmI,imageID,startX,startY,right,0,1), walkDir(right), state(PAUSED), travelDist(0), pauseCounter(0), sTMove(0), tTMove(0){}
+Baddie::Baddie(StudentWorld* whereAmI, int imageID, int startX, int startY):Moves(whereAmI, imageID, startX, startY), travelDist(0), pauseCounter(0), sTMove(0){}
 
 void Baddie::doSomething(){
-    if(state==PAUSED){
+    if(getState()==PAUSED){
         //If baddie on same square as player, and player is in a waiting state
         if(getX()==getWorld()->getPeach()->getX() && getY()==getWorld()->getPeach()->getY() && getWorld()->getPeach()->isWaiting()){
             //Simulate 50% chance
@@ -159,17 +167,17 @@ void Baddie::doSomething(){
         if(pauseCounter==0){
             //Set squares to move to random num [1,10]
             sTMove = randInt(1,10);
-            tTMove = sTMove*8;
+            setTicks(sTMove*8);
             
-            //IMPLEMENT THIS
             //Pick a new random direction to walk in, that is legal
-            int newDir = randInt(0,3)*90;
-            if(newDir!=walkDir){
-            }
-            
+            int newDir;
+            do{
+                newDir = randInt(0,3)*90;
+            }while(!canMove(newDir) || getWalkDir()==newDir);
+            setWalkDir(newDir);
             
             //Set baddie to walking state
-            state = WALKING;
+            setState(WALKING);
         }
     }//if paused state
 }
