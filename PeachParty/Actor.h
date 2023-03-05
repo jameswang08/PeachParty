@@ -28,7 +28,7 @@ class Moves: public Actor{
     virtual void doSomething() = 0;
     bool isLiving(); //Only living things move
     int moveInRandDir(); //Returns new valid random direction
-
+    void teleport(); //Teleports actor
     
     //Helper funcs
     bool canMove(int direction); //Checks if player/baddie can move in this direction
@@ -58,7 +58,7 @@ class Moves: public Actor{
 
 class Player: public Moves{
   public:
-    Player(StudentWorld* whereAmI, int imageID, int startX, int startY);
+    Player(StudentWorld* whereAmI, int imageID, int startX, int startY, int pNum);
     void doSomething();
     void moveFunc();
 
@@ -84,8 +84,6 @@ class Player: public Moves{
     //CONSTANTS
     static const int WAITING = 0;
     static const int WALKING = 1;
-    const int P1 = 1;
-    const int P2 = 2;
     
     int dieRoll; //Player's roll
     int nCoins; //Number of coins
@@ -95,6 +93,7 @@ class Player: public Moves{
     bool here; //Flag for if a player is staying on a square
     bool onDirSq; //Flag for when play lands on directional square
     bool teleported; //Flag for when player is teleported
+    int playerNum; //Player number
 };
 
 //Baddie base class for Boo and Bowser
@@ -105,6 +104,7 @@ class Baddie: public Moves{
     virtual void moveFunc() = 0; //Func for what baddie does when they are walking
     virtual void pausedAction(Player* plyr) = 0; //Func for what baddie does when they are paused
     virtual int nSquares() = 0; //Func to get random num of squares to move
+    void hit(); //Func for when baddie hit by vortex
     
     //Getters
     bool metPeach() const; //Getter for peach contact

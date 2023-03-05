@@ -50,6 +50,15 @@ int Moves::moveInRandDir(){
     return newDir;
 }
 
+void Moves::teleport(){
+    int x, y;
+    do{
+        x = randInt(0,15);
+        y = randInt(0,15);
+    }while(getWorld()->isEmpty(x,y));
+    moveTo(x*16,y*16);
+}
+
 bool Moves::canMove(int direction){
     int newX, newY;
     getPositionInThisDirection(direction, 16, newX, newY);
@@ -109,8 +118,8 @@ void Moves::setTicks(int amt){
 //****************
 //||PLAYER CLASS||
 //****************
-Player::Player(StudentWorld* whereAmI, int imageID, int startX, int startY)
-:Moves(whereAmI, imageID, startX, startY), dieRoll(0), nCoins(0), nStars(0), vortex(false), landed(false), here(false), onDirSq(false), teleported(false){}
+Player::Player(StudentWorld* whereAmI, int imageID, int startX, int startY, int pNum)
+:Moves(whereAmI, imageID, startX, startY), dieRoll(0), nCoins(0), nStars(0), vortex(false), landed(false), here(false), onDirSq(false), teleported(false), playerNum(pNum){}
 
 void Player::doSomething(){
     //If Player to Move
@@ -121,8 +130,9 @@ void Player::doSomething(){
             setWalkDir(newDir);
             setTP(false);
         }
+        int playerAction = getWorld()->getAction(playerNum);
         //If user decides to roll die
-        if(getWorld()->getAction(P1)==ACTION_ROLL){
+        if(playerAction==ACTION_ROLL){
             dieRoll = randInt(1,10); //Generate random die roll
             setTicks(dieRoll*8); //Change ticks to move
             setState(WALKING); //Player is now walking
@@ -130,7 +140,7 @@ void Player::doSomething(){
             here = false; //Resets flag for square interaction
         }
         //If user decides to shoot vortex
-        else if(getWorld()->getAction(P1)==ACTION_FIRE){
+        else if(hasVortex() && playerAction==ACTION_FIRE){
             //Creates vortex and plays sound
             getWorld()->createVortex(getX(), getY(), getWalkDir());
             //Updates player to no longer have vortex
@@ -149,7 +159,7 @@ void Player::doSomething(){
             //If play is at a fork
             else if(fork()){
                 //Check if user
-                int newDir = getWorld()->getAction(P1);
+                int newDir = getWorld()->getAction(playerNum);
                 switch(newDir){
                     case(ACTION_UP):
                     {
@@ -342,6 +352,17 @@ void Baddie::setYoshi(bool tf){
 
 void Baddie::setPC(int amt){
     pauseCounter = amt;
+}
+
+void Baddie::hit(){
+    //Teleport bowser to another square on board
+    teleport();
+    //Set walking direction to right and sprite dir to 0 deg
+    setWalkDir(right);
+    //Transition to paused state
+    setState(PAUSED);
+    //Set pause ticks to 180
+    setPC(180);
 }
 
 //****************
@@ -561,13 +582,8 @@ void Event::landAction(Player* plyr){
         //Teleport player to random square
         case 1:
         {
-            //Keep generating random (x,y) coordinates until a valid coordinate is generated
-            int x, y;
-            do{
-                x = randInt(0,15);
-                y = randInt(0,15);
-            }while(getWorld()->isEmpty(x,y));
-            plyr->moveTo(x*16,y*16);
+            //Teleport player to random valid square
+            plyr->teleport();
             
             //Play teleport sound
             getWorld()->playSound(SOUND_PLAYER_TELEPORT);
