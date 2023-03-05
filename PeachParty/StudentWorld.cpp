@@ -99,7 +99,7 @@ int StudentWorld::move()
     
     //Ask actors to do something
     peachPointer->doSomething();
-    //Implement yoshi later
+    yoshiPointer->doSomething();
     for(int i=0;i<actors.size();i++){
         actors[i]->doSomething();
     }
@@ -126,8 +126,25 @@ int StudentWorld::move()
     if (timeRemaining() <= 0){
         playSound(SOUND_GAME_FINISHED); //Play sound when game ends
         
-        //Placeholder for evaluating which player won IMPLEMENT
-        return GWSTATUS_PEACH_WON;
+        int pStars = peachPointer->getStars(); //How many stars peach has at end of game
+        int yStars = yoshiPointer->getStars(); //How many stars yoshi has at end of game
+        int pCoins = peachPointer->getCoins(); //How many coins peach has at end of game
+        int yCoins = yoshiPointer->getCoins(); //How many coins yoshi has at end of game
+        
+        //If stars are equal
+        if(pStars==yStars){
+            //If coins are also equal, choose a random winner
+            if(pCoins==yCoins){
+                int winner = randInt(1,2);
+                return (winner==1) ? GWSTATUS_PEACH_WON : GWSTATUS_YOSHI_WON;
+            }
+            //If coins are not equal, winner is player with more coins
+            return (pCoins > yCoins) ? GWSTATUS_PEACH_WON : GWSTATUS_YOSHI_WON;
+        }
+        else{
+            //If stars are not equal, winner is player with most stars
+            return (pStars > yStars) ? GWSTATUS_PEACH_WON : GWSTATUS_YOSHI_WON;
+        }
     }
     
 	return GWSTATUS_CONTINUE_GAME;
@@ -187,7 +204,7 @@ Actor* StudentWorld::impactCheck(int x, int y){
         //Search for impactable actor
         if(actors[i]->isImpactable()){
             //If impactable made contact with vortex, return the overlapping, impactable vortex
-            if(abs(actors[i]->getX() - x) < SPRITE_WIDTH || abs(actors[i]->getY() - y) < SPRITE_HEIGHT){
+            if(abs(actors[i]->getX() - x) < SPRITE_WIDTH && abs(actors[i]->getY() - y) < SPRITE_HEIGHT){
                 anActor = actors[i];
                 break;
             }
