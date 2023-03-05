@@ -42,12 +42,20 @@ bool Moves::isLiving(){
     return true;
 }
 
+int Moves::moveInRandDir(){
+    int newDir;
+    do{
+        newDir = randInt(0,3)*90;
+    }while(!canMove(newDir));
+    return newDir;
+}
+
 bool Moves::canMove(int direction){
     int newX, newY;
     getPositionInThisDirection(direction, 16, newX, newY);
     newX /=16;
     newY /=16;
-    return !getWorld()->isEmpty(newX,newY) && newX > 0 && newX < BOARD_WIDTH && newY > 0 && newY < BOARD_HEIGHT;
+    return !getWorld()->isEmpty(newX,newY);
 }
 
 void Moves::corner(){
@@ -66,7 +74,7 @@ bool Moves::fork(){
 }
 
 void Moves::move(){
-    moveAtAngle(getWalkDir(), 2); //Move 2 pixels in walk direction
+    moveAtAngle(walkDir, 2); //Move 2 pixels in walk direction
     setTicks(getTicks()-1); //Decrement ticks to move count by 1
     if(getTicks() == 0){
         moveFunc();
@@ -102,12 +110,17 @@ void Moves::setTicks(int amt){
 //||PLAYER CLASS||
 //****************
 Player::Player(StudentWorld* whereAmI, int imageID, int startX, int startY)
-:Moves(whereAmI, imageID, startX, startY), dieRoll(0), nCoins(0), nStars(0), vortex(false), landed(false), here(false){}
+:Moves(whereAmI, imageID, startX, startY), dieRoll(0), nCoins(0), nStars(0), vortex(false), landed(false), here(false), onDirSq(false), teleported(false){}
 
 void Player::doSomething(){
     //If Player to Move
     if(getState()==WAITING){
-        //Check if avatar is facing valid direction and fix if not
+        //Check if avatar is facing invalid direction (due to being teleported) and turn to random valid direction if so
+        if(teleported && !canMove(getWalkDir())){
+            int newDir = moveInRandDir();
+            setWalkDir(newDir);
+            setTP(false);
+        }
         //If user decides to roll die
         if(getWorld()->getAction(P1)==ACTION_ROLL){
             dieRoll = randInt(1,10); //Generate random die roll
@@ -116,17 +129,69 @@ void Player::doSomething(){
             landed = false; //Player move away from square
             here = false; //Resets flag for square interaction
         }
+        //If user decides to shoot vortex
+        else if(getWorld()->getAction(P1)==ACTION_FIRE){
+            //Creates vortex and plays sound
+            getWorld()->createVortex(getX(), getY(), getWalkDir());
+            //Updates player to no longer have vortex
+            toggleVortex();
+        }
         else return; //User doesn't press key, or presses another key
     }
     //If user is walking
     if(getState()==WALKING){
-        //Check if next tile is empty, and if so, adjust walk direction appropriately
-        if(getX()%16==0 && getY()%16==0 && !canMove(getWalkDir())){
-            corner();
+        //Only check if on a square
+        if(getX()%16==0 && getY()%16==0){
+            //Check for directional square and if true change direction done in directional square itself
+            if(onDirSq){
+                setOnDirSQ(false);
+            }
+            //If play is at a fork
+            else if(fork()){
+                //Check if user
+                int newDir = getWorld()->getAction(P1);
+                switch(newDir){
+                    case(ACTION_UP):
+                    {
+                        newDir = up;
+                        break;
+                    }
+                    case(ACTION_RIGHT):
+                    {
+                        newDir = right;
+                        break;
+                    }
+                    case(ACTION_DOWN):
+                    {
+                        newDir = down;
+                        break;
+                    }
+                    case(ACTION_LEFT):
+                    {
+                        newDir = left;
+                        break;
+                    }
+                    //If user doesn't select direction
+                    default:
+                    {
+                        newDir = -1;
+                        break;
+                    }
+                }//Switch
+                //If new valid direction selected, update walk dir and sprite dir
+                if(newDir!=-1 && canMove(newDir)){
+                    setWalkDir(newDir);
+                }
+                else return;
+            }//Else if at fork
+            //Check if next tile is empty, and if so, adjust walk direction appropriately
+            else if(!canMove(getWalkDir())){
+                corner();
+            }
         }
     }//if
     move();
-};
+}
 
 void Player::moveFunc(){
     setState(WAITING); //If ticks to move equals 0 then change state to waiting to roll
@@ -183,6 +248,14 @@ void Player::setRoll(int n){
     dieRoll = n;
 }
 
+void Player::setOnDirSQ(bool tf){
+    onDirSq = tf;
+}
+
+void Player::setTP(bool tf){
+    teleported = tf;
+}
+
 //****************
 //||BADDIE CLASS||
 //****************
@@ -221,7 +294,8 @@ void Baddie::doSomething(){
             setTicks(sTMove*8);
             
             //Pick a new random direction to walk in, that is legal
-            moveInRandDir();
+            int newDir = moveInRandDir();
+            setWalkDir(newDir);
 
             //Set baddie to walking state
             setState(WALKING);
@@ -234,7 +308,8 @@ void Baddie::doSomething(){
         //If on top of a square
         if(getX()%16==0 && getY()%16==0 && fork()){
             //Pick a random direction to walk in, that is legal
-            moveInRandDir();
+            int newDir = moveInRandDir();
+            setWalkDir(newDir);
         }
         //Else if can't move forward
         else if(getX()%16==0 && getY()%16==0 && !canMove(getWalkDir())){
@@ -243,14 +318,6 @@ void Baddie::doSomething(){
         //Move
         move();
     }
-}
-
-void Baddie::moveInRandDir(){
-    int newDir;
-    do{
-        newDir = randInt(0,3)*90;
-    }while(!canMove(newDir));
-    setWalkDir(newDir);
 }
 
 bool Baddie::metPeach() const{
@@ -442,8 +509,9 @@ Directional::Directional(StudentWorld* whereAmI, int imageID, int startX, int st
 }
 
 void Directional::landAction(Player* plyr){
-    //Change walk direction
+    //Change walk direction and notify player that they landed on directional square
     plyr->setWalkDir(forcingDirection);
+    plyr->setOnDirSQ(true);
 }
 
 void Directional::traverseAction(Player* plyr){landAction(plyr);}
@@ -490,6 +558,7 @@ Event::Event(StudentWorld* whereAmI, int imageID, int startX, int startY):Square
 void Event::landAction(Player* plyr){
     int randEvent = randInt(1,3);
     switch(randEvent){
+        //Teleport player to random square
         case 1:
         {
             //Keep generating random (x,y) coordinates until a valid coordinate is generated
@@ -502,8 +571,10 @@ void Event::landAction(Player* plyr){
             
             //Play teleport sound
             getWorld()->playSound(SOUND_PLAYER_TELEPORT);
+            plyr->setTP(true);
             break;
         }//Case 1
+        //Swap players
         case 2:
         {
             //Swap (x,y) coordinates, number of ticks left in roll, player walk direciton, player sprite direction, and player roll/walk state with other player
@@ -546,6 +617,7 @@ void Event::landAction(Player* plyr){
             getWorld()->playSound(SOUND_PLAYER_TELEPORT);
             break;
         }//Case 2
+        //Give player vortex
         case 3:
         {
             //If player doesn't have a vortex already, give them a vortex and play sound

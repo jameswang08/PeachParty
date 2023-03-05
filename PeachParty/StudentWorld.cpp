@@ -195,3 +195,8 @@ Actor* StudentWorld::impactCheck(int x, int y){
     }
     return anActor;
 }
+
+void StudentWorld::createVortex(int x, int y, int dir){
+    actors.push_back(new Vortex(this, IID_VORTEX, x, y, dir));
+    playSound(SOUND_PLAYER_FIRE);
+}
