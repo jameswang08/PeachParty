@@ -199,8 +199,8 @@ void Player::doSomething(){
                 corner();
             }
         }
+        move();
     }//if
-    move();
 }
 
 void Player::moveFunc(){

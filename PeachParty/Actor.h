@@ -156,8 +156,8 @@ class Square: public Actor{
   public:
     Square(StudentWorld* whereAmI, int imageID, int startX, int startY);
     virtual void doSomething();
-    virtual void landAction(Player* plyr) = 0;//Specialized square action for if player lands on square
-    virtual void traverseAction(Player* plyr) = 0;//Specialized square action for if player traverses square
+    virtual void landAction(Player* plyr) = 0; //Specialized square action for if player lands on square
+    virtual void traverseAction(Player* plyr) = 0; //Specialized square action for if player traverses square
   private:
 };
 

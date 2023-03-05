@@ -136,14 +136,29 @@ int StudentWorld::move()
             //If coins are also equal, choose a random winner
             if(pCoins==yCoins){
                 int winner = randInt(1,2);
+                setFinalScore(pStars, pCoins);
                 return (winner==1) ? GWSTATUS_PEACH_WON : GWSTATUS_YOSHI_WON;
             }
             //If coins are not equal, winner is player with more coins
-            return (pCoins > yCoins) ? GWSTATUS_PEACH_WON : GWSTATUS_YOSHI_WON;
+            if(pCoins > yCoins){
+                setFinalScore(pStars, pCoins);
+                return GWSTATUS_PEACH_WON;
+            }
+            else{
+                setFinalScore(yStars, yCoins);
+                return GWSTATUS_YOSHI_WON;
+            }
         }
         else{
             //If stars are not equal, winner is player with most stars
-            return (pStars > yStars) ? GWSTATUS_PEACH_WON : GWSTATUS_YOSHI_WON;
+            if(pStars > yStars){
+                setFinalScore(pStars, pCoins);
+                return GWSTATUS_PEACH_WON;
+            }
+            else{
+                setFinalScore(yStars, yCoins);
+                return GWSTATUS_YOSHI_WON;
+            }
         }
     }
     

@@ -17,13 +17,13 @@ class StudentWorld : public GameWorld
     virtual int move();
     virtual void cleanUp();
     bool isEmpty(int x, int y); //Checks if next tile is empty
-    Player* getPeach();
-    Player* getYoshi();
+    Player* getPeach(); //Returns pointer to peach player
+    Player* getYoshi(); //Returns pointer to yoshi player
     int getBal() const; //Returns number of coins in the bank
     void setBal(int amt); //Sets the number of coins in the bank
     void convertSquare(int x, int y); //Converts square at given coordinates to dropping square
     Actor* impactCheck(int x, int y); //Checks if vortex makes impact with an impactable actor, if so returns first actor from actors that makes impact
-    void createVortex(int x, int y, int dir); //Creates vortex
+    void createVortex(int x, int y, int dir); //Creates vortex and plays sound
   private:
     std::vector<Actor*> actors; //Vector containing list of all actors, except for Peach and Yoshi
     Player* peachPointer; //Pointer to Peach Actor
