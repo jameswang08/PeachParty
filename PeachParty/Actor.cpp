@@ -52,10 +52,11 @@ int Moves::moveInRandDir(){
 
 void Moves::teleport(){
     int x, y;
+    //Generates new x,y coordinates until non empty, new coordinates are generated
     do{
         x = randInt(0,15);
         y = randInt(0,15);
-    }while(getWorld()->isEmpty(x,y));
+    }while(getWorld()->isEmpty(x,y) || (x==getX()/16 && y==getY()/16));
     moveTo(x*16,y*16);
 }
 
@@ -636,11 +637,12 @@ void Event::landAction(Player* plyr){
         //Give player vortex
         case 3:
         {
-            //If player doesn't have a vortex already, give them a vortex and play sound
+            //If player doesn't have a vortex already, give them a vortex
             if(!plyr->hasVortex()){
                 plyr->toggleVortex();
-                getWorld()->playSound(SOUND_GIVE_VORTEX);
             }
+            //Play sound
+            getWorld()->playSound(SOUND_GIVE_VORTEX);
             break;
         }//Case 3
     }
